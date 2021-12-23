@@ -1,33 +1,33 @@
-export type Emitter<T> = (emit: (value: T | AsyncIterable<T>) => void) => Promise<void>;
+export type Emitter<T> = (push: (value: T | AsyncIterable<T>) => void) => Promise<void>;
 
 export function createSink<T>(emitter: Emitter<T>): AsyncIterable<T> {
-  const sink: Array<T | AsyncIterable<T>> = [];
+  const values: Array<T | AsyncIterable<T>> = [];
 
-  let accept = (value: T | AsyncIterable<T>) => {
-    sink.push(value);
+  let push = (value: T | AsyncIterable<T>) => {
+    values.push(value);
   };
 
-  const done = emitter(value => accept(value));
+  const done = emitter(value => push(value));
 
-  return {
-    [Symbol.asyncIterator]: async function* () {
-      await done;
+  async function* collect() {
+    await done;
 
-      accept = () => {
-        throw new Error(`late value!`); // TODO improve error message
-      }
+    push = () => {
+      throw new Error(`late value!`); // TODO improve error message
+    }
 
-      for (const value of sink) {
-        if (isAsyncIterable<T>(value)) {
-          yield* value;
-        } else {
-          yield value;
-        }
+    for (const value of values) {
+      if (isAsyncIterable<T>(value)) {
+        yield* value;
+      } else {
+        yield value;
       }
     }
   }
+  
+  return collect();
 }
 
-export function isAsyncIterable<T>(value: any): value is AsyncIterable<T> {
-  return !!value[Symbol.asyncIterator];
+export function isAsyncIterable<T>(value: T | AsyncIterable<T>): value is AsyncIterable<T> {
+  return !!(value as any)[Symbol.asyncIterator];
 }

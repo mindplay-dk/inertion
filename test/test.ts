@@ -16,20 +16,33 @@ function ok(pass: boolean, message: string) {
   process.exit(success ? 0 : 1);
 })();
 
+function wait(time: number) {
+  return new Promise(resolve => setTimeout(resolve, 20));
+}
+
 async function test_event_stream() {
   console.log("Event streams");
+
+  const logged: number[] = [];
+
+  const log = (number: number) => { logged.push(number) };
   
   const numbers = createSink<number>(async emit => {
+    log(1);
     emit(1);
-    await new Promise(resolve => setTimeout(resolve, 20));
+    await wait(20);
+    log(2);
     emit(2);
 
     emit(createSink<number>(async emit => {
+      log(3);
       emit(3);
-      await new Promise(resolve => setTimeout(resolve, 20));
+      await wait(20);
+      log(4);
       emit(4);  
     }));
 
+    log(5);
     emit(5);
   });
 
@@ -41,6 +54,7 @@ async function test_event_stream() {
     }
 
     ok(isEqual(result, [1,2,3,4,5]), "it yields the entire result");
+    ok(isEqual(logged, [1,2,3,5,4]), "nested emitters immediately start running");
   }
 
   {

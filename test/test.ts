@@ -1,10 +1,13 @@
 import process from "process";
 import isEqual from "fast-deep-equal";
-import { createSink } from "../src/sink";
+import { createSink, isAsyncIterable, Payload } from "../src/sink";
+import { createInvoker } from "../src/invoker";
+import { Message } from "../src/protocol";
+import { ok } from "../src/assertions";
 
 let success = false;
 
-function ok(pass: boolean, message: string) {
+function check(pass: boolean, message: string) {
   success = success && pass;
 
   console.log(pass ? "🆗" : "❌", message);
@@ -12,6 +15,7 @@ function ok(pass: boolean, message: string) {
 
 (async () => {
   await test_event_stream();
+  await test_invoker();
 
   process.exit(success ? 0 : 1);
 })();
@@ -53,8 +57,8 @@ async function test_event_stream() {
       result.push(n!);
     }
 
-    ok(isEqual(result, [1,2,3,4,5]), "it yields the entire result");
-    ok(isEqual(logged, [1,2,3,5,4]), "nested emitters immediately start running");
+    check(isEqual(result, [1,2,3,4,5]), "it yields the entire result");
+    check(isEqual(logged, [1,2,3,5,4]), "nested emitters immediately start running");
   }
 
   {
@@ -78,7 +82,50 @@ async function test_event_stream() {
       caught = e as Error;
     }
 
-    ok(!!caught, "it throws if a value arrives too late");
-    ok(caught!.message === `late value!`, "it has an error message");
+    check(!!caught, "it throws if a value arrives too late");
+    check(caught!.message === `late value!`, "it has an error message");
   }
+}
+
+async function test_invoker() {
+  console.log("Invokers");
+
+  const log: Message[] = [];
+
+  const record = async (message: Payload<Message>) => {
+    if (!isAsyncIterable(message)) {
+      log.push(message);
+    }
+  };
+
+  const invoker = createInvoker({ ok }, record);
+
+  invoker.ok(true, "test 1");
+  invoker.ok(false, "test 2");
+
+  const expected = [
+    {
+      type: "Asserted",
+      result: {
+        pass: true,
+        actual: true,
+        expected: true,
+        details: ["test 1"],
+      },
+    },
+    {
+      type: "Asserted",
+      result: {
+        pass: true,
+        actual: false,
+        expected: true,
+        details: ["test 2"],
+      },
+    },
+  ];
+
+  check(
+    isEqual(log, expected),
+    `can invoke test-methods and record results - expected: ${JSON.stringify(expected)}, actual: ${JSON.stringify(log)}`,
+  );
 }

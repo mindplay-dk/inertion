@@ -1,9 +1,11 @@
-export type Emitter<T> = (push: (value: T | AsyncIterable<T>) => void) => Promise<void>;
+export type Payload<T> = T | AsyncIterable<T>;
+
+export type Emitter<T> = (push: (value: Payload<T>) => void) => Promise<void>;
 
 export function createSink<T>(emitter: Emitter<T>): AsyncIterable<T> {
-  const values: Array<T | AsyncIterable<T>> = [];
+  const values: Array<Payload<T>> = [];
 
-  let push = (value: T | AsyncIterable<T>) => {
+  let push = (value: Payload<T>) => {
     values.push(value);
   };
 

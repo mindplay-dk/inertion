@@ -4,6 +4,7 @@ import { createSink, isAsyncIterable, Payload } from "../src/sink";
 import { createInvoker } from "../src/invoker";
 import { Message } from "../src/protocol";
 import { ok } from "../src/assertions";
+import { runSpec } from "../src/spec";
 
 let success = false;
 
@@ -16,6 +17,7 @@ function check(pass: boolean, message: string) {
 (async () => {
   await test_event_stream();
   await test_invoker();
+  await test_run_spec();
 
   process.exit(success ? 0 : 1);
 })();
@@ -102,6 +104,47 @@ async function test_invoker() {
 
   invoker.ok(true, "test 1");
   invoker.ok(false, "test 2");
+
+  const expected = [
+    {
+      type: "Asserted",
+      result: {
+        pass: true,
+        actual: true,
+        expected: true,
+        details: ["test 1"],
+      },
+    },
+    {
+      type: "Asserted",
+      result: {
+        pass: true,
+        actual: false,
+        expected: true,
+        details: ["test 2"],
+      },
+    },
+  ];
+
+  check(
+    isEqual(log, expected),
+    `can invoke test-methods and record results - expected: ${JSON.stringify(expected)}, actual: ${JSON.stringify(log)}`,
+  );
+}
+
+async function test_run_spec() {
+  const methods = { ok };
+
+  const result = runSpec(methods, async is => {
+    is.ok(true, "test 1");
+    is.ok(false, "test 2");
+  });
+
+  const log: Message[] = [];
+
+  for await (const item of result) {
+    log.push(item);
+  }
 
   const expected = [
     {

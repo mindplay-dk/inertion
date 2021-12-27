@@ -11,7 +11,7 @@ export type MethodMap = {
   [name: string]: TestMethod;
 }
 
-export type TestMethod = (...args: any[]) => Payload<Message>;
+export type TestMethod = (...args: any[]) => MessagePayload;
 
 export type Assertion = (...args: any[]) => Result;
 
@@ -26,6 +26,6 @@ export type Invoker<T extends MethodMap> = {
   [K in keyof T]: (...args: Parameters<T[K]>) => void;
 }
 
-export type Recorder = (message: Payload<Message>) => void;
+export type Recorder = (message: MessagePayload) => void;
 
 export type Tester<T extends MethodMap> = (description: string, spec: Spec<T>) => void;

@@ -12,7 +12,7 @@ function ok(actual: unknown, ...details: unknown[]): Check {
 
 function equal(actual: unknown, expected: unknown, ...details: unknown[]): Check {
   return {
-    label: "ok",
+    label: "equal",
     pass: actual === expected,
     actual,
     expected,
@@ -63,7 +63,7 @@ type Spec<T extends MethodMap> = {
 }
 
 type Test<T extends MethodMap> = {
-  assertions: T;
+  methods: T;
   description: string;
   spec: Spec<T>;
 }
@@ -80,43 +80,66 @@ type Check = {
   details: any[];
 }
 
+type Assertion = {
+  location: string;
+  check: Check;
+}
+
 type Result = {
   description: string;
-  checks: Check[];
+  assertions: Assertion[];
+  time: number;
+  error: unknown;
 }
 
 // my framework:
 
-function setup<T extends MethodMap>(assertions: T): TestFactory<T> {
-  return (description, spec) => ({ assertions, description, spec });
+function setup<T extends MethodMap>(methods: T): TestFactory<T> {
+  return (description, spec) => ({ methods, description, spec });
 }
 
 async function run(tests: Array<Test<any>>): Promise<Result[]> {
   return Promise.all(tests.map(runTest));
 }
 
-async function runTest<T extends MethodMap>({ assertions, description, spec }: Test<T>): Promise<Result> {
-  const checks: Check[] = [];
+async function runTest<T extends MethodMap>({ methods, description, spec }: Test<T>): Promise<Result> {
+  const assertions: Assertion[] = [];
 
-  let collect = (check: Check) => {
-    checks.push(check);
+  let collect = (assertion: Assertion) => {
+    assertions.push(assertion);
   };
 
   const tester = Object.fromEntries(
-    Object.entries(assertions)
+    Object.entries(methods)
       .map(([name, assertion]) => [name, (...args: any) => {
-        collect(assertion(...args));
+        const location = new Error().stack.split("\n").pop().trim();
+
+        const check = assertion(...args);
+
+        collect({ location, check });
       }])
   ) as Tester<T>;
 
-  await spec(tester);
+  const started = Date.now();
+
+  let error: unknown;
+
+  try {
+    await spec(tester);
+  } catch (e: unknown) {
+    error = e;
+  }
+
+  const time = Date.now() - started;
 
   collect = () => {
-    throw new Error(`attempted assertion after end of test`);
+    throw new Error(`attempted assertion after end of test "${description}" - please check your code for missing await statements.`);
   };
 
   return {
     description,
-    checks,
+    assertions,
+    time,
+    error,
   };
 }

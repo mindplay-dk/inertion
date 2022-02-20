@@ -1,16 +1,83 @@
 import process from "process";
-import isEqual from "fast-deep-equal";
+import * as assertions from "../src/assertions";
+import { run, setup } from "../src/harness";
+import { report, statusOf } from "../src/reporting";
 
-let success = false;
+const test = setup(assertions);
 
-function check(pass: boolean, message: string) {
-  success = success && pass;
+const canRunTests = test(`can run tests`, async is => {
+  const test = setup(assertions);
 
-  console.log(pass ? "🆗" : "❌", message);
-}
+  const A = test(`this is a test`, async is => {
+    is.equal(1, 1, "one is one");
+    is.ok(true, "true is true");
+  });
+
+  const resultA = {
+    description: "this is a test",
+    error: undefined,
+    assertions: [
+      {
+        location: "at /mnt/c/workspace/funky-test/src/harness.ts:8:71",
+        check: {
+          label: "equal",
+          pass: true,
+          actual: 1,
+          expected: 1,
+          details: ["one is one"],
+        },
+      },
+      {
+        location: "at /mnt/c/workspace/funky-test/src/harness.ts:8:71",
+        check: {
+          label: "ok",
+          pass: true,
+          actual: true,
+          expected: true,
+          details: ["true is true"],
+        },
+      },
+    ],
+  };
+
+  const B = test(`this is another test`, async is => {
+    is.ok(false, "this will fail");
+  });
+
+  const resultB = {
+    description: "this is another test",
+    error: undefined,
+    assertions: [
+      {
+        location: "at /mnt/c/workspace/funky-test/src/harness.ts:8:71",
+        check: {
+          label: "ok",
+          pass: false,
+          actual: false,
+          expected: true,
+          details: ["this will fail"],
+        },
+      },
+    ],
+  };
+
+  const results = await run([A, B]);
+
+  const checkedResults = results.map(({ time, ...rest }) => {
+    is.ok(time >= 0, "it produces a time value");
+
+    return rest;
+  });
+
+  is.equal(checkedResults, [resultA, resultB], "it produces the expected test results");
+});
 
 (async () => {
-  // TODO tests
+  const results = await run([
+    canRunTests
+  ]);
 
-  process.exit(success ? 0 : 1);
+  report(results, console);
+
+  process.exit(statusOf(results));
 })();

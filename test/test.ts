@@ -18,7 +18,7 @@ const canRunTests = test(`can run tests`, async is => {
     error: undefined,
     assertions: [
       {
-        location: "at /mnt/c/workspace/funky-test/src/harness.ts:8:71",
+        location: "/home/mindplay/workspace/funky-test/test/test.ts:12:8",
         check: {
           label: "equal",
           pass: true,
@@ -28,7 +28,7 @@ const canRunTests = test(`can run tests`, async is => {
         },
       },
       {
-        location: "at /mnt/c/workspace/funky-test/src/harness.ts:8:71",
+        location: "/home/mindplay/workspace/funky-test/test/test.ts:13:8",
         check: {
           label: "ok",
           pass: true,
@@ -49,7 +49,7 @@ const canRunTests = test(`can run tests`, async is => {
     error: undefined,
     assertions: [
       {
-        location: "at /mnt/c/workspace/funky-test/src/harness.ts:8:71",
+        location: "/home/mindplay/workspace/funky-test/test/test.ts:44:8",
         check: {
           label: "ok",
           pass: false,

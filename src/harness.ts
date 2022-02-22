@@ -18,7 +18,9 @@ export async function runTest<T extends MethodMap>({ methods, description, spec 
   const tester = Object.fromEntries(
     Object.entries(methods)
       .map(([name, assertion]) => [name, (...args: any) => {
-        const location = new Error().stack!.split("\n").pop()!.trim();
+        const location = new Error().stack!
+          .split("\n")[2]
+          .replace(/^\s+at /, "");
 
         const check = assertion(...args);
 

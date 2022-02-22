@@ -1,4 +1,5 @@
 import { Result } from "./api";
+import util from "util";
 
 export function statusOf(results: Result[]): number {
   return isSuccess(results) ? 1 : 0;
@@ -9,6 +10,8 @@ export function isSuccess(results: Result[]): boolean {
     result.error || result.assertions.some(({ check }) => !check.pass)
   );
 }
+
+const inspect = (...values: unknown[]) => util.inspect(values, { depth: 99, maxArrayLength: 999, colors: true });
 
 export function report(results: Result[], console: Console): void {
   // TODO add proper reporting
@@ -35,13 +38,13 @@ export function report(results: Result[], console: Console): void {
       console.log(
         check.pass ? "✅" : "❌",
         `[${check.label}]`,
-        ...check.details.map(value => JSON.stringify(value))
+        ...check.details
       );
 
       if (!check.pass) {
         console.log(`  location:`, location);
-        console.log(`  actual:  `, check.actual);
-        console.log(`  expected:`, check.expected);
+        console.log(`  actual:  `, inspect(check.actual));
+        console.log(`  expected:`, inspect(check.expected));
       }
     }
   }

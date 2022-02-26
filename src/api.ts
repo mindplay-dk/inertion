@@ -3,7 +3,7 @@ export type MethodMap = {
 }
 
 export type TestMethod = {
-  (...args: unknown[]): Check;
+  (...args: unknown[]): Fact;
 }
 
 export type TestFactory<T extends MethodMap> = {
@@ -24,7 +24,7 @@ export type Tester<T extends MethodMap> = {
   [K in keyof T]: (...args: Parameters<T[K]>) => void;
 }
 
-export type Check = {
+export type Fact = {
   label: string;
   pass: boolean;
   actual: unknown;
@@ -32,14 +32,14 @@ export type Check = {
   details: unknown[];
 }
 
-export type Assertion = {
+export type Check = {
   location: string;
-  check: Check;
+  fact: Fact;
 }
 
 export type Result = {
   description: string;
-  assertions: Assertion[];
+  checks: Check[];
   time: number;
   error: unknown;
 }

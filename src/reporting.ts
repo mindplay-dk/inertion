@@ -7,7 +7,7 @@ export function statusOf(results: Result[]): number {
 
 export function isSuccess(results: Result[]): boolean {
   return results.some(result =>
-    result.error || result.assertions.some(({ check }) => !check.pass)
+    result.error || result.checks.some(({ fact: check }) => !check.pass)
   );
 }
 
@@ -34,7 +34,7 @@ export function report(results: Result[], console: Console): void {
   for (const result of results) {
     console.log(`"${result.description}"\n`);
 
-    for (const { check, location } of result.assertions) {
+    for (const { fact: check, location } of result.checks) {
       console.log(
         check.pass ? "✅" : "❌",
         `[${check.label}]`,

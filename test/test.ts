@@ -16,10 +16,10 @@ const canRunTests = test(`can run tests`, async is => {
   const resultA = {
     description: "this is a test",
     error: undefined,
-    assertions: [
+    checks: [
       {
         location: "/home/mindplay/workspace/funky-test/test/test.ts:12:8",
-        check: {
+        fact: {
           label: "equal",
           pass: true,
           actual: 1,
@@ -29,7 +29,7 @@ const canRunTests = test(`can run tests`, async is => {
       },
       {
         location: "/home/mindplay/workspace/funky-test/test/test.ts:13:8",
-        check: {
+        fact: {
           label: "ok",
           pass: true,
           actual: true,
@@ -47,10 +47,10 @@ const canRunTests = test(`can run tests`, async is => {
   const resultB = {
     description: "this is another test",
     error: undefined,
-    assertions: [
+    checks: [
       {
         location: "/home/mindplay/workspace/funky-test/test/test.ts:44:8",
-        check: {
+        fact: {
           label: "ok",
           pass: false,
           actual: false,

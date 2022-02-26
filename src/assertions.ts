@@ -1,7 +1,7 @@
 import isEqual from "fast-deep-equal";
-import { Check } from "./api";
+import { Fact } from "./api";
 
-export function ok(actual: unknown, ...details: unknown[]): Check {
+export function ok(actual: unknown, ...details: unknown[]): Fact {
   return {
     label: "ok",
     pass: actual === true,
@@ -11,7 +11,7 @@ export function ok(actual: unknown, ...details: unknown[]): Check {
   };
 }
 
-export function equal(actual: unknown, expected: unknown, ...details: unknown[]): Check {
+export function equal(actual: unknown, expected: unknown, ...details: unknown[]): Fact {
   return {
     label: "equal",
     pass: isEqual(actual, expected),

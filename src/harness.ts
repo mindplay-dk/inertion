@@ -1,4 +1,4 @@
-import { Assertion, MethodMap, Result, Test, Tester, TestFactory } from "./api";
+import { Check, MethodMap, Result, Test, Tester, TestFactory } from "./api";
 
 export function setup<T extends MethodMap>(methods: T): TestFactory<T> {
   return (description, spec) => ({ methods, description, spec });
@@ -9,10 +9,10 @@ export async function run(tests: Array<Test<any>>): Promise<Result[]> {
 }
 
 export async function runTest<T extends MethodMap>({ methods, description, spec }: Test<T>): Promise<Result> {
-  const assertions: Assertion[] = [];
+  const checks: Check[] = [];
 
-  let collect = (assertion: Assertion) => {
-    assertions.push(assertion);
+  let checked = (check: Check) => {
+    checks.push(check);
   };
 
   const tester = Object.fromEntries(
@@ -24,7 +24,7 @@ export async function runTest<T extends MethodMap>({ methods, description, spec 
 
         const check = assertion(...args);
 
-        collect({ location, check });
+        checked({ location, fact: check });
       }])
   ) as Tester<T>;
 
@@ -40,13 +40,13 @@ export async function runTest<T extends MethodMap>({ methods, description, spec 
 
   const time = Date.now() - started;
 
-  collect = () => {
+  checked = () => {
     throw new Error(`attempted assertion after end of test "${description}" - please check your code for missing await statements.`);
   };
 
   return {
     description,
-    assertions,
+    checks,
     time,
     error,
   };

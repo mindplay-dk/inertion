@@ -22,9 +22,9 @@ export async function runTest<T extends MethodMap>({ methods, description, spec 
           .split("\n")[2]
           .replace(/^\s+at /, "");
 
-        const check = assertion(...args);
+        const fact = assertion(...args);
 
-        checked({ location, fact: check });
+        checked({ location, fact });
       }])
   ) as Tester<T>;
 

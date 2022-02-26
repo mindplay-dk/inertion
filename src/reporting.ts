@@ -6,9 +6,11 @@ export function statusOf(results: Result[]): number {
 }
 
 export function isSuccess(results: Result[]): boolean {
-  return results.some(result =>
-    result.error || result.checks.some(({ fact: check }) => !check.pass)
-  );
+  return results.some(isFailed) === false;
+}
+
+export function isFailed(result: Result): boolean {
+  return !!result.error || result.checks.some(({ fact }) => !fact.pass);
 }
 
 const inspect = (...values: unknown[]) => util.inspect(values, { depth: 99, maxArrayLength: 999, colors: true });

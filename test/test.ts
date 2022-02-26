@@ -2,7 +2,7 @@ import process from "process";
 import { Result } from "../src/api";
 import * as assertions from "../src/assertions";
 import { run, setup } from "../src/harness";
-import { isSuccess, report, statusOf } from "../src/reporting";
+import { isSuccess, reportTo, statusOf } from "../src/reporting";
 import { failingTest, passingTest, testWithContext as createTestWithContext } from "./cases";
 
 const test = setup(assertions);
@@ -93,7 +93,7 @@ const test = setup(assertions);
     }),
   ]);
 
-  report(results, console);
+  reportTo(console, results);
 
   process.exit(statusOf(results));
 })();

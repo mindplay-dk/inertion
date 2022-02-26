@@ -15,7 +15,7 @@ export function isFailed(result: Result): boolean {
 
 const inspect = (...values: unknown[]) => util.inspect(values, { depth: 99, maxArrayLength: 999, colors: true });
 
-export function report(results: Result[], console: Console): void {
+export function reportTo(console: Console, results: Result[]): void {
   // TODO add proper reporting
   //
   //      - pick a formatter:

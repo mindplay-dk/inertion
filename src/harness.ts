@@ -1,14 +1,19 @@
-import { Check, MethodMap, Result, Test, Tester, TestFactory } from "./api";
+import { Check, ContextFactory, MethodMap, Result, Test, Tester, TestFactory } from "./api";
 
-export function setup<T extends MethodMap>(methods: T): TestFactory<T> {
-  return (description, spec) => ({ methods, description, spec });
+export function setup<T extends MethodMap, C>(methods: T, createContext?: ContextFactory<C>): TestFactory<T, C> {
+  return (description, spec) => ({
+    methods,
+    createContext: createContext || (() => null as any),
+    description,
+    spec,
+  });
 }
 
-export async function run(tests: Array<Test<any>>): Promise<Result[]> {
+export async function run(tests: Array<Test<any,any>>): Promise<Result[]> {
   return Promise.all(tests.map(runTest));
 }
 
-export async function runTest<T extends MethodMap>({ methods, description, spec }: Test<T>): Promise<Result> {
+export async function runTest<T extends MethodMap, C>({ methods, createContext, description, spec }: Test<T, C>): Promise<Result> {
   const checks: Check[] = [];
 
   let checked = (check: Check) => {
@@ -33,7 +38,7 @@ export async function runTest<T extends MethodMap>({ methods, description, spec 
   let error: unknown;
 
   try {
-    await spec(tester);
+    await spec(tester, createContext());
   } catch (e: unknown) {
     error = e;
   }

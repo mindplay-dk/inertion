@@ -6,18 +6,21 @@ export type TestMethod = {
   (...args: unknown[]): Fact;
 }
 
-export type TestFactory<T extends MethodMap> = {
-  (description: string, spec: Spec<T>): Test<T>;
+export type ContextFactory<T> = () => T;
+
+export type TestFactory<T extends MethodMap, C> = {
+  (description: string, spec: Spec<T, C>): Test<T, C>;
 }
 
-export type Spec<T extends MethodMap> = {
-  (tester: Tester<T>): Promise<void>;
+export type Spec<T extends MethodMap, C> = {
+  (tester: Tester<T>, context: C): Promise<void>;
 }
 
-export type Test<T extends MethodMap> = {
+export type Test<T extends MethodMap, C> = {
   methods: T;
+  createContext: ContextFactory<C>;
   description: string;
-  spec: Spec<T>;
+  spec: Spec<T, C>;
 }
 
 export type Tester<T extends MethodMap> = {

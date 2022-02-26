@@ -3,7 +3,7 @@ import { Result } from "../src/api";
 import * as assertions from "../src/assertions";
 import { run, setup } from "../src/harness";
 import { isSuccess, report, statusOf } from "../src/reporting";
-import { failingTest, passingTest } from "./cases";
+import { failingTest, passingTest, testWithContext as createTestWithContext } from "./cases";
 
 const test = setup(assertions);
 
@@ -81,6 +81,15 @@ const test = setup(assertions);
       const results = await run([passingTest]);
     
       is.equal(isSuccess(results), true, "isSuccess() returns true when all tests succeed");
+    }),
+
+    test(`can create unique contexts`, async is => {
+      const testWithContext = createTestWithContext();
+
+      const results = await run([testWithContext, testWithContext])
+
+      is.equal(results[0].checks[0].fact.actual, 1);
+      is.equal(results[1].checks[0].fact.actual, 2);
     }),
   ]);
 

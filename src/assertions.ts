@@ -11,7 +11,7 @@ export function ok(actual: unknown, ...details: unknown[]): Fact {
   };
 }
 
-export function equal(actual: unknown, expected: unknown, ...details: unknown[]): Fact {
+export function equal<T>(actual: T, expected: T, ...details: unknown[]): Fact {
   return {
     label: "equal",
     pass: isEqual(actual, expected),

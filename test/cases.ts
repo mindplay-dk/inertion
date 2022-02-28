@@ -1,7 +1,9 @@
-import * as assertions from "../src/assertions";
+import assertions, { assertion } from "../src/assertions";
 import { setup } from "../src/harness";
 
-const test = setup(assertions);
+const even = assertion("even", (num: number) => num % 2 === 0);
+
+const test = setup({ ...assertions, even });
 
 export const passingTest = test(`this is a test`, async is => {
   is.equal(1, 1, "one is one");
@@ -22,3 +24,8 @@ export const testWithContext = () => {
     is.equal(number, number);
   });
 }
+
+export const testWithCustomAssertion = test(`custom assertion`, async is => {
+  is.even(2, "ok", "sure");
+  is.even(1, "nope");
+});

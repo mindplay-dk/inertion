@@ -1,9 +1,9 @@
 import process from "process";
 import { Result } from "../src/api";
-import * as assertions from "../src/assertions";
+import assertions from "../src/assertions";
 import { run, setup } from "../src/harness";
 import { isSuccess, reportTo, statusOf } from "../src/reporting";
-import { failingTest, passingTest, testWithContext as createTestWithContext } from "./cases";
+import { failingTest, passingTest, testWithContext as createTestWithContext, testWithCustomAssertion } from "./cases";
 
 const test = setup(assertions);
 
@@ -15,7 +15,7 @@ const test = setup(assertions);
         error: undefined,
         checks: [
           {
-            location: "/home/mindplay/workspace/funky-test/test/cases.ts:7:6",
+            location: "/home/mindplay/workspace/funky-test/test/cases.ts:9:6",
             fact: {
               label: "equal",
               pass: true,
@@ -25,7 +25,7 @@ const test = setup(assertions);
             },
           },
           {
-            location: "/home/mindplay/workspace/funky-test/test/cases.ts:8:6",
+            location: "/home/mindplay/workspace/funky-test/test/cases.ts:10:6",
             fact: {
               label: "ok",
               pass: true,
@@ -42,7 +42,7 @@ const test = setup(assertions);
         error: undefined,
         checks: [
           {
-            location: "/home/mindplay/workspace/funky-test/test/cases.ts:12:6",
+            location: "/home/mindplay/workspace/funky-test/test/cases.ts:14:6",
             fact: {
               label: "ok",
               pass: true,
@@ -52,7 +52,7 @@ const test = setup(assertions);
             },
           },
           {
-            location: "/home/mindplay/workspace/funky-test/test/cases.ts:13:6",
+            location: "/home/mindplay/workspace/funky-test/test/cases.ts:15:6",
             fact: {
               label: "ok",
               pass: false,
@@ -90,6 +90,42 @@ const test = setup(assertions);
 
       is.equal(results[0].checks[0].fact.actual, 1);
       is.equal(results[1].checks[0].fact.actual, 2);
+    }),
+
+    test(`can bootstrap test-methods from assertions`, async is => {
+      const result = await run([testWithCustomAssertion]);
+
+      is.equal(
+        result.map(({ time, ...rest }) => rest),
+        [
+          {
+            description: 'custom assertion',
+            checks: [
+              {
+                location: '/home/mindplay/workspace/funky-test/test/cases.ts:29:6',
+                fact: {
+                  label: 'even',
+                  pass: true,
+                  actual: 2,
+                  expected: undefined,
+                  details: ['ok', 'sure']
+                }
+              },
+              {
+                location: '/home/mindplay/workspace/funky-test/test/cases.ts:30:6',
+                fact: {
+                  label: 'even',
+                  pass: false,
+                  actual: 1,
+                  expected: undefined,
+                  details: ['nope']
+                }
+              }
+            ],
+            error: undefined
+          }
+        ]
+      );
     }),
   ]);
 

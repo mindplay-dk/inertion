@@ -3,7 +3,7 @@ export type MethodMap = {
 }
 
 export type TestMethod = {
-  (...args: unknown[]): Fact;
+  (...args: any[]): Fact;
 }
 
 export type ContextFactory<T> = () => T;

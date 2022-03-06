@@ -3,7 +3,7 @@ import { Result } from "../src/api";
 import assertions from "../src/assertions";
 import { run, setup } from "../src/harness";
 import { isSuccess, reportTo, statusOf } from "../src/reporting";
-import { failingTest, passingTest, testWithContext as createTestWithContext, testWithCustomAssertion } from "./cases";
+import { failingTest, passingTest, createTestWithContext, createTestWithCustomAssertion } from "./cases";
 
 const test = setup(assertions);
 
@@ -93,7 +93,7 @@ const test = setup(assertions);
     }),
 
     test(`can bootstrap test-methods from assertions`, async is => {
-      const result = await run([testWithCustomAssertion]);
+      const result = await run([createTestWithCustomAssertion]);
 
       is.equal(
         result.map(({ time, ...rest }) => rest),

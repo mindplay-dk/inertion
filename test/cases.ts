@@ -15,7 +15,7 @@ export const failingTest = test(`this is another test`, async is => {
   is.ok(false, "this will fail");
 });
 
-export const testWithContext = () => {
+export const createTestWithContext = () => {
   let number = 1;
 
   const test = setup(assertions, () => ({ number: number++ }));
@@ -25,7 +25,7 @@ export const testWithContext = () => {
   });
 }
 
-export const testWithCustomAssertion = test(`custom assertion`, async is => {
+export const createTestWithCustomAssertion = test(`custom assertion`, async is => {
   is.even(2, "ok", "sure");
   is.even(1, "nope");
 });

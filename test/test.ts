@@ -127,6 +127,106 @@ const test = setup(assertions);
         ]
       );
     }),
+
+    test(`ok/notOk assertions make strict boolean comparisons`, async is => {
+      const a = {}, b = {};
+
+      is.equal(
+        assertions.ok(true, a, b),
+        { label: "ok", pass: true, actual: true, expected: true, details: [a, b] }
+      );
+
+      is.equal(
+        assertions.notOk(false, a, b),
+        { label: "notOk", pass: true, actual: false, expected: false, details: [a, b] }
+      );
+
+      const nonBooleans: any[] = ["false", "true", 1, 0, null, undefined, {}];
+
+      for (const actual of nonBooleans) {
+        is.equal(
+          assertions.ok(actual, a, b),
+          { label: "ok", pass: false, actual, expected: true, details: [a, b] }
+        );
+  
+        is.equal(
+          assertions.notOk(actual, a, b),
+          { label: "notOk", pass: false, actual, expected: false, details: [a, b] }
+        );
+      }
+    }),
+    
+    test(`same/notSame assertions make strict (identity) comparisons`, async is => {
+      const a = {}, b = {};
+
+      const same = { a: 1 };
+      const notSame = { a: 1 };
+
+      is.equal(
+        assertions.same(same, same, a, b),
+        { label: "same", pass: true, actual: same, expected: same, details: [a, b] }
+      );
+
+      is.equal(
+        assertions.same(same, notSame, a, b),
+        { label: "same", pass: false, actual: same, expected: notSame, details: [a, b] }
+      );
+
+      is.equal(
+        assertions.notSame(same, notSame, a, b),
+        { label: "notSame", pass: true, actual: same, expected: notSame, details: [a, b] }
+      );
+
+      is.equal(
+        assertions.notSame(same, same, a, b),
+        { label: "notSame", pass: false, actual: same, expected: same, details: [a, b] }
+      );
+    }),
+
+    test(`equal/notEqual assertions make deep comparisons (using fast-deep-equal)`, async is => {
+      // NOTE: this test is non-exhaustive, since `fast-deep-equal` is well tested already.
+      
+      const a = {}, b = {};
+
+      const equals: [any, any][] = [
+        [1, 1],
+        ["aaa", "aaa"],
+        [{}, {}],
+        [{ a: 1, b: "bbb", c: [1, 2] }, { a: 1, b: "bbb", c: [1, 2] }],
+      ];
+
+      for (const [actual, expected] of equals) {
+        is.equal(
+          assertions.equal(actual, expected, a, b),
+          { label: "equal", pass: true, actual, expected, details: [a, b] },
+        );  
+
+        is.equal(
+          assertions.notEqual(actual, expected, a, b),
+          { label: "notEqual", pass: false, actual, expected, details: [a, b] },
+        );
+      }
+
+      const nonEquals: [any, any][] = [
+        [1, 2],
+        ["aaa", "bbb"],
+        [{}, { a: 1 }],
+        [{ a: 1, b: "bbb", c: [1, 2] }, { a: 2, b: "bbb", c: [1, 2] }],
+        [{ a: 1, b: "bbb", c: [1, 2] }, { a: 1, b: "bbb", c: [1] }],
+      ];
+
+      for (const [actual, expected] of nonEquals) {
+        is.equal(
+          assertions.equal(actual, expected, a, b),
+          { label: "equal", pass: false, actual, expected, details: [a, b] },
+        );  
+
+        is.equal(
+          assertions.notEqual(actual, expected, a, b),
+          { label: "notEqual", pass: true, actual, expected, details: [a, b] },
+        );
+      }
+    }),
   ]);
 
   reportTo(console, results);

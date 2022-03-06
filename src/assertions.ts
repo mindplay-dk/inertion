@@ -1,7 +1,7 @@
 import isEqual from "fast-deep-equal";
 import { Fact } from "./api";
 
-export function ok(actual: unknown, ...details: unknown[]): Fact {
+export function ok(actual: boolean, ...details: unknown[]): Fact {
   return {
     label: "ok",
     pass: actual === true,
@@ -11,7 +11,17 @@ export function ok(actual: unknown, ...details: unknown[]): Fact {
   };
 }
 
-// TODO IOC for `isEqual`: must support at least all of the following:
+export function notOk(actual: boolean, ...details: unknown[]): Fact {
+  return {
+    label: "notOk",
+    pass: actual === false,
+    actual,
+    expected: false,
+    details,
+  };
+}
+
+// TODO IOC for `equal` and `notEqual`: must support at least all of the following:
 //      https://www.npmjs.com/package/fast-deep-equal    *DEFAULT*
 //      https://www.npmjs.com/package/deep-equal
 //      https://www.npmjs.com/package/deep-is
@@ -26,9 +36,43 @@ export function equal<T>(actual: T, expected: T, ...details: unknown[]): Fact {
   };
 }
 
+export function notEqual<T>(actual: T, expected: T, ...details: unknown[]): Fact {
+  return {
+    label: "notEqual",
+    pass: ! isEqual(actual, expected),
+    actual,
+    expected,
+    details,
+  };
+}
+
+export function same<T>(actual: T, expected: T, ...details: unknown[]): Fact {
+  return {
+    label: "same",
+    pass: actual === expected,
+    actual,
+    expected,
+    details,
+  };
+}
+
+export function notSame<T>(actual: T, expected: T, ...details: unknown[]): Fact {
+  return {
+    label: "notSame",
+    pass: actual !== expected,
+    actual,
+    expected,
+    details,
+  };
+}
+
 export default {
   ok,
+  notOk,
   equal,
+  notEqual,
+  same,
+  notSame,
 };
 
 // TODO check compatibility of `assertion` with the following:

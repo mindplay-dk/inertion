@@ -168,13 +168,6 @@ const test = setup(assertions);
         [NaN, NaN]
       ];
 
-      const notSame: [any, any][] = [
-        [a, b],
-        [null, undefined],
-        ["aaa", "bbb"],
-        [+0, -0],
-      ];
-
       for (const [actual, expected] of same) {
         is.equal(
           assertions.same(actual, expected, a, b),
@@ -186,6 +179,13 @@ const test = setup(assertions);
           { label: "notSame", pass: false, actual, expected, details: [a, b] }
         );
       }
+
+      const notSame: [any, any][] = [
+        [a, b],
+        [null, undefined],
+        ["aaa", "bbb"],
+        [+0, -0],
+      ];
 
       for (const [actual, expected] of notSame) {
         is.equal(
@@ -243,6 +243,20 @@ const test = setup(assertions);
           { label: "notEqual", pass: true, actual, expected, details: [a, b] },
         );
       }
+    }),
+
+    test(`can manually pass or fail tests`, async is => {
+      const a = {}, b = {};
+
+      is.equal(
+        assertions.passed(a, b),
+        { label: "passed", pass: true, actual: undefined, expected: undefined, details: [a, b] },
+      );
+
+      is.equal(
+        assertions.failed(a, b),
+        { label: "failed", pass: false, actual: undefined, expected: undefined, details: [a, b] },
+      );
     }),
   ]);
 

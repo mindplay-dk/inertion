@@ -66,6 +66,26 @@ export function notSame<T>(actual: T, expected: T, ...details: unknown[]): Fact 
   };
 }
 
+export function passed(...details: unknown[]): Fact {
+  return {
+    label: "passed",
+    pass: true,
+    actual: undefined,
+    expected: undefined,
+    details,
+  };
+}
+
+export function failed(...details: unknown[]): Fact {
+  return {
+    label: "failed",
+    pass: false,
+    actual: undefined,
+    expected: undefined,
+    details,
+  };
+}
+
 export default {
   ok,
   notOk,
@@ -73,6 +93,8 @@ export default {
   notEqual,
   same,
   notSame,
+  passed,
+  failed,
 };
 
 // TODO check compatibility of `assertion` with the following:

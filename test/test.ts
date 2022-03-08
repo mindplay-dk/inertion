@@ -157,30 +157,47 @@ const test = setup(assertions);
     }),
     
     test(`same/notSame assertions make strict (identity) comparisons`, async is => {
-      const a = {}, b = {};
+      const a = { a: 1 }, b = { a: 1 };
 
-      const same = { a: 1 };
-      const notSame = { a: 1 };
+      const same: [any, any][] = [
+        [a, a],
+        [null, null],
+        [true, true],
+        [false, false],
+        ["aaa", "aaa"],
+        [NaN, NaN]
+      ];
 
-      is.equal(
-        assertions.same(same, same, a, b),
-        { label: "same", pass: true, actual: same, expected: same, details: [a, b] }
-      );
+      const notSame: [any, any][] = [
+        [a, b],
+        [null, undefined],
+        ["aaa", "bbb"],
+        [+0, -0],
+      ];
 
-      is.equal(
-        assertions.same(same, notSame, a, b),
-        { label: "same", pass: false, actual: same, expected: notSame, details: [a, b] }
-      );
+      for (const [actual, expected] of same) {
+        is.equal(
+          assertions.same(actual, expected, a, b),
+          { label: "same", pass: true, actual, expected, details: [a, b] }
+        );
 
-      is.equal(
-        assertions.notSame(same, notSame, a, b),
-        { label: "notSame", pass: true, actual: same, expected: notSame, details: [a, b] }
-      );
+        is.equal(
+          assertions.notSame(actual, expected, a, b),
+          { label: "notSame", pass: false, actual, expected, details: [a, b] }
+        );
+      }
 
-      is.equal(
-        assertions.notSame(same, same, a, b),
-        { label: "notSame", pass: false, actual: same, expected: same, details: [a, b] }
-      );
+      for (const [actual, expected] of notSame) {
+        is.equal(
+          assertions.same(actual, expected, a, b),
+          { label: "same", pass: false, actual, expected, details: [a, b] }
+        );
+
+        is.equal(
+          assertions.notSame(actual, expected, a, b),
+          { label: "notSame", pass: true, actual, expected, details: [a, b] }
+        );
+      }
     }),
 
     test(`equal/notEqual assertions make deep comparisons (using fast-deep-equal)`, async is => {

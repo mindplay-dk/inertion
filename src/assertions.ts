@@ -49,7 +49,7 @@ export function notEqual<T>(actual: T, expected: T, ...details: unknown[]): Fact
 export function same<T>(actual: T, expected: T, ...details: unknown[]): Fact {
   return {
     label: "same",
-    pass: actual === expected,
+    pass: Object.is(actual, expected),
     actual,
     expected,
     details,
@@ -59,7 +59,7 @@ export function same<T>(actual: T, expected: T, ...details: unknown[]): Fact {
 export function notSame<T>(actual: T, expected: T, ...details: unknown[]): Fact {
   return {
     label: "notSame",
-    pass: actual !== expected,
+    pass: ! Object.is(actual, expected),
     actual,
     expected,
     details,

@@ -15,6 +15,9 @@ export function isFailed(result: Result): boolean {
 
 const inspect = (...values: unknown[]) => util.inspect(values, { depth: 99, maxArrayLength: 999, colors: true });
 
+// TODO `Console` compatible subset abstraction, with implementations for node and browser consoles
+// TODO use `ansi-colors` https://www.npmjs.com/package/ansi-colors
+
 export function reportTo(console: Console, results: Result[]): void {
   // TODO add proper reporting
   //

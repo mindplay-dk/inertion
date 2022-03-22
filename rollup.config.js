@@ -12,7 +12,7 @@ export default [
       sourcemap: true,
     },
     external: ["util"],
-    plugins: [resolve(), commonjs(), typescript()],
+    plugins: [resolve(), commonjs(), typescript({ tsconfig: './tsconfig.json' })],
   },
   // {
   //   input: "build/compiled/index.d.ts",

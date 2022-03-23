@@ -1,4 +1,9 @@
 {
+  "name": "inertion",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "types": "./dist/index.d.ts",
   "scripts": {
     "test": "ts-node test/test.ts",
     "build": "rollup -c"

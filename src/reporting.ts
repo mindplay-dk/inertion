@@ -10,13 +10,12 @@ export function isSuccess(results: Result[]): boolean {
 }
 
 export function isFailed(result: Result): boolean {
-  return !!result.error || result.checks.some(({ fact }) => !fact.pass);
+  return result.error !== undefined || result.checks.some(({ fact }) => !fact.pass);
 }
 
 const inspect = (...values: unknown[]) => util.inspect(values, { depth: 99, maxArrayLength: 999, colors: true });
 
 // TODO `Console` compatible subset abstraction, with implementations for node and browser consoles
-// TODO use `ansi-colors` https://www.npmjs.com/package/ansi-colors
 
 export function reportTo(console: Console, results: Result[]): void {
   // TODO add proper reporting

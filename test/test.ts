@@ -1,9 +1,9 @@
 import process from "process";
 import { Result } from "../src/api";
 import assertions from "../src/assertions";
-import { run, setup } from "../src/harness";
+import { run, setup, UnknownError } from "../src/harness";
 import { isSuccess, reportTo, statusOf } from "../src/reporting";
-import { failingTest, passingTest, createTestWithContext, createTestWithCustomAssertion } from "./cases";
+import { failingTest, passingTest, createTestWithContext, createTestWithCustomAssertion, testWithUnexpectedError, testWithUnexpectedUnknownError } from "./cases";
 
 const test = setup(assertions);
 
@@ -86,7 +86,7 @@ const test = setup(assertions);
     test(`can create unique contexts`, async is => {
       const testWithContext = createTestWithContext();
 
-      const results = await run([testWithContext, testWithContext])
+      const results = await run([testWithContext, testWithContext]);
 
       is.equal(results[0].checks[0].fact.actual, 1);
       is.equal(results[1].checks[0].fact.actual, 2);
@@ -257,6 +257,13 @@ const test = setup(assertions);
         assertions.failed(a, b),
         { label: "failed", pass: false, actual: undefined, expected: undefined, details: [a, b] },
       );
+    }),
+
+    test(`can capture unexpected errors`, async is => {
+      const results = await run([testWithUnexpectedError, testWithUnexpectedUnknownError]);
+
+      is.ok(results[0].error instanceof Error);
+      is.ok(results[1].error instanceof UnknownError, "it should convert unknown error types to UnknownError instances");
     }),
   ]);
 

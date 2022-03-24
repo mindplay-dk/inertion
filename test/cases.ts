@@ -29,3 +29,11 @@ export const createTestWithCustomAssertion = test(`custom assertion`, async is =
   is.even(2, "ok", "sure");
   is.even(1, "nope");
 });
+
+export const testWithUnexpectedError = test(`unexpected error`, async is => {
+  throw new Error(`oh no`);
+});
+
+export const testWithUnexpectedUnknownError = test(`unexpected unknown error`, async is => {
+  throw "oh no";
+});

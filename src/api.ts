@@ -1,3 +1,5 @@
+import { UnknownError } from "./harness";
+
 export type MethodMap = {
   [name: string]: TestMethod;
 }
@@ -44,5 +46,5 @@ export type Result = {
   description: string;
   checks: Check[];
   time: number;
-  error: unknown;
+  error: Error | UnknownError | undefined;
 }

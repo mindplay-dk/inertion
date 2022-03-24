@@ -13,6 +13,17 @@ export async function run(tests: Array<Test<any,any>>): Promise<Result[]> {
   return Promise.all(tests.map(runTest));
 }
 
+/**
+ * This `Error`-type represents capture `throw` statements with a non-`Error` type.
+ * 
+ * TODO maybe keep the value formatting internal to this class? remove formatting from `createReport` in here, and remove the `UnknownError` type from `Fact.error`?
+ */
+export class UnknownError extends Error {
+  constructor(public readonly value: unknown) {
+    super("Unknown error type");
+  }
+}
+
 export async function runTest<T extends MethodMap, C>({ methods, createContext, description, spec }: Test<T, C>): Promise<Result> {
   const checks: Check[] = [];
 
@@ -35,12 +46,12 @@ export async function runTest<T extends MethodMap, C>({ methods, createContext, 
 
   const started = Date.now();
 
-  let error: unknown;
+  let error: Error | undefined;
 
   try {
     await spec(tester, createContext());
   } catch (e: unknown) {
-    error = e;
+    error = e instanceof Error ? e : new UnknownError(e);
   }
 
   const time = Date.now() - started;

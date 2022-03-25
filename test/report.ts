@@ -1,75 +1,6 @@
 import { Check, Fact, Result } from "../src/api";
 import { UnknownError } from "../src/harness";
-import { isFailed } from "../src/reporting";
-
-interface Report {
-  passed: number;
-  failed: number;
-  time: number;
-  results: Array<{
-    description: string;
-    pass: boolean;
-    time: number;
-    error: string | undefined;
-    checksPassed: number;
-    checksFailed: number;
-    facts: Array<{
-      label: string;
-      pass: boolean;
-      actual: string | undefined;
-      expected: string | undefined;
-      details: string | undefined;
-    }>;
-  }>;
-}
-
-type Formatter = (value: unknown) => string;
-
-function createReport(results: Result[], format: Formatter): Report {
-  const failed = results.filter(isFailed).length;
-  const passed = results.length - failed;
-  
-  let time = 0;
-
-  for (const result of results) {
-    time += result.time;
-  }
-
-  return {
-    passed,
-    failed,
-    time,
-    results: results.map(result => ({
-      description: result.description,
-      pass: ! isFailed(result),
-      time: result.time,
-      error: result.error
-        ? (result.error instanceof UnknownError ? `Unknown error:\n` + format(result.error.value) : "") + result.error.stack
-        : undefined,
-      checksPassed: result.checks.filter(({ fact }) => fact.pass).length,
-      checksFailed: result.checks.filter(({ fact }) => ! fact.pass).length,
-      facts: result.checks.map(({ fact: { label, pass, actual, expected, details }, location }) => ({
-        label,
-        pass,
-        actual: actual !== undefined ? format(actual) : undefined,
-        expected: expected !== undefined ? format(expected) : undefined,
-        details: typeof details[0] === "string"
-          ? details[0] + (details.length > 1 ? "\n" + format(details.slice(1)) : "")
-          : format(details)
-      })),
-    })),
-  };
-}
-
-// verbosity options:
-//
-//   0: print descriptions of failed tests only
-//   1: print all descriptions (with check counts)
-//   2: print all descriptions (with check counts) and checks (with details)
-
-type Verbosity = 0 | 1 | 2;
-
-const verbosityOptions: Verbosity[] = [0, 1, 2];
+import { printReport } from "../src/reporting";
 
 function createSampleResults(): Result[] {
   let results: Result[] = [];
@@ -149,4 +80,4 @@ function createSampleResults(): Result[] {
   return results;
 }
 
-console.log(JSON.stringify(createReport(createSampleResults(), v => JSON.stringify(v, null, 2))));
+printReport(createSampleResults());

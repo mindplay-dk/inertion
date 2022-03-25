@@ -1,5 +1,7 @@
 import { Result } from "./api";
 import util from "util";
+import { createContainer } from "./container";
+import { bootstrap, Reporter } from "./reporter";
 
 export function statusOf(results: Result[]): number {
   return isSuccess(results) ? 1 : 0;
@@ -14,6 +16,8 @@ export function isFailed(result: Result): boolean {
 }
 
 const inspect = (...values: unknown[]) => util.inspect(values, { depth: 99, maxArrayLength: 999, colors: true });
+
+export const { printReport } = createContainer<Reporter>(bootstrap);
 
 // TODO `Console` compatible subset abstraction, with implementations for node and browser consoles
 

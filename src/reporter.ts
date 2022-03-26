@@ -1,7 +1,8 @@
-import { Check, Fact, Result } from "../src/api";
+import { Result } from "../src/api";
 import { UnknownError } from "../src/harness";
 import { isFailed } from "../src/reporting";
 import { FactoryMap } from "./container";
+import format from "pretty-format";
 
 /**
  * 0: print descriptions of failed tests only
@@ -13,15 +14,13 @@ export type Verbosity = 0 | 1 | 2;
 export interface Reporter {
   printReport(results: Result[]): void;
   print(line: string): void;
+  prefix(prefix: string, text: string): string;
   format(value: unknown): string;
-  formatValue(value: unknown): string | undefined;
   formatError(error: Error): string;
   formatDetails(values: unknown[]): string;
 }
 
-const formatValue = ({ format }: Pick<Reporter, "format">) => (value: unknown): string | undefined => {
-  return value !== undefined ? format(value) : undefined;
-}
+const prefix = (prefix: string, text: string) => prefix + text.replace(/\n/g, `$&${" ".repeat(prefix.length)}`);
 
 const formatError = ({ format }: Pick<Reporter, "format">) => (error: Error): string => {
   return (error instanceof UnknownError
@@ -35,48 +34,42 @@ const formatDetails = ({ format }: Pick<Reporter, "format">) => (details: unknow
     : format(details);
 }
 
-const printReport = ({ print, format, formatValue }: Pick<Reporter, "print"| "format" | "formatValue">) => (results: Result[]): void => {
+const printReport = ({ print, format, prefix }: Pick<Reporter, "print"| "format" | "prefix">) => (results: Result[]): void => {
   for (const result of results) {
     const { description, time } = result;
 
     const pass = ! isFailed(result);
 
-    const numChecks = result.checks.length;
-    const numPassed = result.checks.filter(({ fact }) => ! fact.pass).length;
-
-    print(`${pass ? "PASS" : "FAIL"} [${numPassed}/${numChecks}] ${description} (${time}ms)`);
+    print(`${pass ? "PASSED" : "FAILED"}: ${description} (${time}ms)`);
 
     const error = result.error
       ? (result.error instanceof UnknownError ? `Unknown error:\n` + format(result.error.value) : "") + "\n" + result.error.stack
       : undefined;
 
     if (error) {
-      print(error);
+      print(prefix("  ", error));
     }
 
     print("");
     
     for (const { fact, location } of result.checks) {
-      const { label, pass } = fact;
+      const { pass, label, actual, expected } = fact;
 
       if (! pass) {
-        const actual = formatValue(fact.actual);
-        const expected = formatValue(fact.expected);
-
-        const [title, ...details] = fact.details;
+        const [title, ...details] = typeof fact.details[0] === "string" && fact.details[0].indexOf("\n") === -1
+          ? fact.details
+          : ["", ...fact.details];
   
-        if (typeof title === "string") {
-          print(`* [${label}] ${title}`);
-          print(`ACTUAL: ${actual}`);
-          print(`EXPECTED: ${expected}`);
-        } else {
-          print(`* [${label}]`);
+        print(`  × [${label}] ${title}`);
+        print(`  └ ${location}`)
+
+        if (actual !== undefined || expected !== undefined) {
+          print(prefix(`  ACTUAL:   `, format(actual)));
+          print(prefix(`  EXPECTED: `, format(expected)));
         }
 
-        print(`  at ${location}`)
-
         if (details.length) {
-          print(`DETAILS\n:${format(fact.details.slice(1))}`);
+          print(`  DETAILS:\n${prefix("  ", format(details))}`);
         }
 
         print("");
@@ -93,16 +86,33 @@ const printReport = ({ print, format, formatValue }: Pick<Reporter, "print"| "fo
     time += result.time;
   }
 
-  print(`TESTS: ${passed + failed}`);
-  print(`PASSED: ${passed}`);
-  print(`FAILED: ${failed}`);
+  print(`√ PASSED: ${passed}`);
+  print(`× FAILED: ${failed}`);
+  print(`  TOTAL:  ${passed + failed}`);
+};
+
+// yuck, but: https://github.com/facebook/jest/issues/12609
+const formatString = {
+  test(value: unknown) {
+    return typeof value === "string";
+  },
+  serialize(value: string, _: any, indentation: string) {
+    if (value.indexOf("\n") === -1) {
+      return JSON.stringify(value);
+    }
+    
+    return value
+      .split(/(?<=\n)/g)
+      .map(line => JSON.stringify(line))
+      .join(`\n${indentation}+ `);
+  }
 };
 
 export const bootstrap: FactoryMap<Reporter> = {
   printReport,
   print: () => (line: string) => console.log(line),
-  format: () => (value: string) => JSON.stringify(value, null, 2),
-  formatValue,
+  prefix: () => prefix,
+  format: () => (value: string) => format(value, { plugins: [formatString] }),
   formatError,
   formatDetails,
 }

@@ -20,12 +20,12 @@ function createSampleResults(): Result[] {
 
     for (const pass of [true, false]) {
       checks.push({
-        location: `at test.js:1:1`,
+        location: `test.js:1:1`,
         fact: {
           label: "ok",
           pass,
           ...valueMode,
-          details: [],
+          details: [values],
         }
       });
     }
@@ -72,7 +72,7 @@ function createSampleResults(): Result[] {
     results.push({
       description: details,
       error: undefined,
-      checks: basicChecks.map(check => ({ ...check, ...detailMode })),
+      checks: basicChecks.map(check => ({ ...check, fact: { ...check.fact, ...detailMode } })),
       time: 0.123,
     });
   }

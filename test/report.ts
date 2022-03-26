@@ -36,7 +36,7 @@ function createSampleResults(): Result[] {
   // we want to see some basic pass/fail checks in combination with different error modes:
 
   const basicChecks: Check[] = [true, false].map(pass => ({
-    location: `at test.js:1:1`,
+    location: `test.js:1:1`,
     fact: {
       label: "ok",
       pass,

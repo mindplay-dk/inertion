@@ -75,12 +75,12 @@ const formatDiagnostic = ({ format }: Pick<Reporter, "format">) => (actual: unkn
   }
   
   if (sameTypes) {
-    return diffIndividualLines($expected, $actual)
+    return diffIndividualLines($actual, $expected)
       .map(({ value, added, removed }) => 
         added
-          ? `  ${colors.bgRed.white(" × ")} ${value}`
+          ? `  ${colors.bgGreen.white(" √ ")} ${value}`
           : removed
-            ? `  ${colors.bgGreen.white(" √ ")} ${value}`
+            ? `  ${colors.bgRed.white(" × ")} ${value}`
             : `      ${value}`
       )
       .join("\n");

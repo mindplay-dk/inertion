@@ -3,6 +3,21 @@ import { UnknownError } from "../src/harness";
 import { isFailed } from "../src/reporting";
 import { FactoryMap } from "./container";
 import format from "pretty-format";
+import { Change, diffLines, diffWordsWithSpace } from "diff";
+import colors from "ansi-colors";
+
+/**
+ * Enhancement to the `diffLines` function: produces `Change` records for individual lines.
+ */
+function diffIndividualLines(oldStr: string, newStr: string): Change[] {
+  return diffLines(oldStr, newStr)
+    .map(({ value, added, removed }) => value
+      .split("\n")
+      .filter(line => line !== "")
+      .map(value => ({ value, added, removed }))
+    )
+    .flat();
+}
 
 /**
  * 0: print descriptions of failed tests only
@@ -36,10 +51,56 @@ const formatDetails = ({ format }: Pick<Reporter, "format">) => (details: unknow
 }
 
 const formatDiagnostic = ({ format }: Pick<Reporter, "format">) => (actual: unknown, expected: unknown): string => {
+  const $actual = format(actual);
+  const $expected = format(expected);
+
+  const sameTypes = typeof actual === typeof expected;
+
+  const singleLines = ($actual.indexOf("\n") === -1) && ($expected.indexOf("\n") === -1);
+
+  if (expected === undefined) {
+    return singleLines
+      ? `  ${colors.bgRed.white(" × ")} ACTUAL: ` + $actual
+      : "  " + colors.bgRed.white(" × ") + " ACTUAL:\n" + prefix("      ", $actual);
+  }
+  
+  if (sameTypes && singleLines) {
+    const diff = diffWordsWithSpace($actual, $expected);
+
+    return (
+      `  ACTUAL:   ` + diff.map(({ value, added, removed }) => added ? "" : removed ? colors.bgRed.white(value) : value).join("") +
+      "\n" +
+      `  EXPECTED: ` + diff.map(({ value, added, removed }) => added ? colors.bgGreen.white(value) : removed ? "" : value).join("")
+    );
+  }
+  
+  if (sameTypes) {
+    return diffIndividualLines($expected, $actual)
+      .map(({ value, added, removed }) => 
+        added
+          ? "  " + colors.bgRed.white(" × ") + " " + value
+          : removed
+            ? "  " + colors.bgGreen.white(" √ ") + " " + value
+            : "      " + value
+      )
+      .join("\n");
+  }
+
+  if (singleLines) {
+    return (
+      `  ${colors.bgRed.white(" × ")} ACTUAL:   ` + $actual +
+      "\n" +
+      `  ${colors.bgGreen.white(" √ ")} EXPECTED: ` + $expected
+    );
+  }
+
+  // different types, multiple lines - in this case, diffing doesn't make any sense:
+
   return (
-    prefix(`  ACTUAL:   `, format(actual)) +
-    "\n" +
-    prefix(`  EXPECTED: `, format(expected))
+    "  " + colors.bgRed.white(" × ") + " ACTUAL:\n" +
+    prefix("      ", $actual) + "\n" +
+    "  " + colors.bgGreen.white(" √ ") + " EXPECTED:\n" +
+    prefix("      ", $expected)
   );
 }
 
@@ -73,6 +134,7 @@ const printReport = ({ print, format, prefix, formatDiagnostic }: Pick<Reporter,
         print(`  └ ${location}`)
 
         if (actual !== undefined || expected !== undefined) {
+          print("");
           print(formatDiagnostic(actual, expected));
         }
 

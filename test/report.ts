@@ -2,6 +2,14 @@ import { Check, Fact, Result } from "../src/api";
 import { UnknownError } from "../src/harness";
 import { printReport } from "../src/reporting";
 
+/**
+ * How do you "test" what the output of a reporter looks like? 🤔
+ * 
+ * An actual test can't verify the visual fidelity or subjective quality of the
+ * report - so instead of a test, the approach here is to synthesize a set of
+ * results with all the possible permutations, and then run the reporter, so
+ * we can see what it all looks like.
+ */
 function createSampleResults(): Result[] {
   let results: Result[] = [];
 
@@ -11,8 +19,10 @@ function createSampleResults(): Result[] {
     "no actual or expected": { actual: undefined, expected: undefined },
     "actual only (single-line)": { actual: "actual only, single-line", expected: undefined },
     "actual only (multi-line)": { actual: "actual only\nmulti-line", expected: undefined },
-    "actual and expected (both single-line)": { actual: "actual, single-line", expected: "expected, single-line" },
-    "actual and expected (multi-line)": { actual: "actual\nmulti-line", expected: "expected\nmulti-line" },
+    "actual and expected (single-line, same types)": { actual: "actual, single-line", expected: "expected, single-line" },
+    "actual and expected (single-line, different types)": { actual: "actual", expected: 123 },
+    "actual and expected (multi-line, same types)": { actual: { value: "actual\nmulti-line", same: true }, expected: { value: "expected\nmulti-line", same: true } },
+    "actual and expected (multi-line, different types)": { actual: "actual\nmulti-line", expected: { values: [1, 2, 3] } },
   };
 
   for (const [values, valueMode] of Object.entries(valueModes)) {

@@ -5,6 +5,8 @@ import format from "pretty-format";
 import { Change, diffLines, diffWordsWithSpace } from "diff";
 import colors from "ansi-colors";
 
+// TODO optional support for https://github.com/hildjj/node-inspect-extracted as alternative formatter?
+
 /**
  * Enhancement to the `diffLines` function: produces `Change` records for individual lines.
  */

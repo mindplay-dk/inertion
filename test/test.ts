@@ -2,7 +2,7 @@ import process from "process";
 import { Result } from "../src/api";
 import assertions from "../src/assertions";
 import { run, setup, UnknownError } from "../src/harness";
-import { isSuccess, reportTo, statusOf } from "../src/reporting";
+import { printReport, isSuccess, statusOf } from "../src/reporting";
 import { failingTest, passingTest, createTestWithContext, createTestWithCustomAssertion, testWithUnexpectedError, testWithUnexpectedUnknownError } from "./cases";
 
 const test = setup(assertions);
@@ -267,7 +267,7 @@ const test = setup(assertions);
     }),
   ]);
 
-  reportTo(console, results);
+  printReport(results);
 
   process.exit(statusOf(results));
 })();

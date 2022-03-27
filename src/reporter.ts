@@ -1,6 +1,5 @@
 import { Result } from "../src/api";
 import { UnknownError } from "../src/harness";
-import { isFailed } from "../src/reporting";
 import { FactoryMap } from "./container";
 import format from "pretty-format";
 import { Change, diffLines, diffWordsWithSpace } from "diff";
@@ -17,6 +16,10 @@ function diffIndividualLines(oldStr: string, newStr: string): Change[] {
       .map(value => ({ value, added, removed }))
     )
     .flat();
+}
+
+export function isFailed(result: Result): boolean {
+  return result.error !== undefined || result.checks.some(({ fact }) => !fact.pass);
 }
 
 /**

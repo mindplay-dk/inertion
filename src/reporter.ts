@@ -18,6 +18,7 @@ export interface Reporter {
   format(value: unknown): string;
   formatError(error: Error): string;
   formatDetails(values: unknown[]): string;
+  formatDiagnostic(actual: unknown, expected: unknown): string;
 }
 
 const prefix = (prefix: string, text: string) => prefix + text.replace(/\n/g, `$&${" ".repeat(prefix.length)}`);
@@ -34,7 +35,15 @@ const formatDetails = ({ format }: Pick<Reporter, "format">) => (details: unknow
     : format(details);
 }
 
-const printReport = ({ print, format, prefix }: Pick<Reporter, "print"| "format" | "prefix">) => (results: Result[]): void => {
+const formatDiagnostic = ({ format }: Pick<Reporter, "format">) => (actual: unknown, expected: unknown): string => {
+  return (
+    prefix(`  ACTUAL:   `, format(actual)) +
+    "\n" +
+    prefix(`  EXPECTED: `, format(expected))
+  );
+}
+
+const printReport = ({ print, format, prefix, formatDiagnostic }: Pick<Reporter, "print"| "format" | "prefix" | "formatDiagnostic">) => (results: Result[]): void => {
   for (const result of results) {
     const { description, time } = result;
 
@@ -64,8 +73,7 @@ const printReport = ({ print, format, prefix }: Pick<Reporter, "print"| "format"
         print(`  └ ${location}`)
 
         if (actual !== undefined || expected !== undefined) {
-          print(prefix(`  ACTUAL:   `, format(actual)));
-          print(prefix(`  EXPECTED: `, format(expected)));
+          print(formatDiagnostic(actual, expected));
         }
 
         if (details.length) {
@@ -115,4 +123,5 @@ export const bootstrap: FactoryMap<Reporter> = {
   format: () => (value: string) => format(value, { plugins: [formatString] }),
   formatError,
   formatDetails,
+  formatDiagnostic,
 }

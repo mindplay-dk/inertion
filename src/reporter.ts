@@ -60,8 +60,8 @@ const formatDiagnostic = ({ format }: Pick<Reporter, "format">) => (actual: unkn
 
   if (expected === undefined) {
     return singleLines
-      ? `  ${colors.bgRed.white(" × ")} ACTUAL: ` + $actual
-      : "  " + colors.bgRed.white(" × ") + " ACTUAL:\n" + prefix("      ", $actual);
+      ? `  ${colors.bgRed.white(" × ")} ACTUAL: ${$actual}`
+      : `  ${colors.bgRed.white(" × ")} ACTUAL:\n${prefix("      ", $actual)}`;
   }
   
   if (sameTypes && singleLines) {
@@ -78,29 +78,26 @@ const formatDiagnostic = ({ format }: Pick<Reporter, "format">) => (actual: unkn
     return diffIndividualLines($expected, $actual)
       .map(({ value, added, removed }) => 
         added
-          ? "  " + colors.bgRed.white(" × ") + " " + value
+          ? `  ${colors.bgRed.white(" × ")} ${value}`
           : removed
-            ? "  " + colors.bgGreen.white(" √ ") + " " + value
-            : "      " + value
+            ? `  ${colors.bgGreen.white(" √ ")} ${value}`
+            : `      ${value}`
       )
       .join("\n");
   }
 
   if (singleLines) {
     return (
-      `  ${colors.bgRed.white(" × ")} ACTUAL:   ` + $actual +
-      "\n" +
-      `  ${colors.bgGreen.white(" √ ")} EXPECTED: ` + $expected
+      `  ${colors.bgRed.white(" × ")} ACTUAL:   ${$actual}\n` +
+      `  ${colors.bgGreen.white(" √ ")} EXPECTED: ${$expected}`
     );
   }
 
   // different types, multiple lines - in this case, diffing doesn't make any sense:
 
   return (
-    "  " + colors.bgRed.white(" × ") + " ACTUAL:\n" +
-    prefix("      ", $actual) + "\n" +
-    "  " + colors.bgGreen.white(" √ ") + " EXPECTED:\n" +
-    prefix("      ", $expected)
+    `  ${colors.bgRed.white(" × ")} ACTUAL:\n` + prefix("      ", $actual) + "\n" +
+    `  ${colors.bgGreen.white(" √ ")} EXPECTED:\n` + prefix("      ", $expected)
   );
 }
 

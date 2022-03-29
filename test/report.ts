@@ -16,9 +16,9 @@ function createSampleResults(): Result[] {
   // we want to see all combinations of actual/expected values and pass/fail:
 
   const valueModes: Record<string, Pick<Fact, "actual" | "expected">> = {
-    "no actual or expected": { actual: undefined, expected: undefined },
-    "actual only (single-line)": { actual: "actual only, single-line", expected: undefined },
-    "actual only (multi-line)": { actual: "actual only\nmulti-line", expected: undefined },
+    "no actual or expected": { },
+    "actual only (single-line)": { actual: "actual only, single-line" },
+    "actual only (multi-line)": { actual: "actual only\nmulti-line" },
     "actual and expected (single-line, same types)": { actual: "actual, single-line", expected: "expected, single-line" },
     "actual and expected (single-line, different types)": { actual: "actual", expected: 123 },
     "actual and expected (multi-line, same types)": { actual: { value: "actual\nmulti-line", same: true }, expected: { value: "expected\nmulti-line", same: true } },
@@ -50,8 +50,6 @@ function createSampleResults(): Result[] {
     fact: {
       label: "ok",
       pass,
-      actual: undefined,
-      expected: undefined,
       details: []
     }
   }));

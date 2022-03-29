@@ -107,7 +107,6 @@ const test = setup(assertions);
                   label: 'even',
                   pass: true,
                   actual: 2,
-                  expected: undefined,
                   details: ['ok', 'sure']
                 }
               },
@@ -117,7 +116,6 @@ const test = setup(assertions);
                   label: 'even',
                   pass: false,
                   actual: 1,
-                  expected: undefined,
                   details: ['nope']
                 }
               }
@@ -250,12 +248,12 @@ const test = setup(assertions);
 
       is.equal(
         assertions.passed(a, b),
-        { label: "passed", pass: true, actual: undefined, expected: undefined, details: [a, b] },
+        { label: "passed", pass: true, details: [a, b] },
       );
 
       is.equal(
         assertions.failed(a, b),
-        { label: "failed", pass: false, actual: undefined, expected: undefined, details: [a, b] },
+        { label: "failed", pass: false, details: [a, b] },
       );
     }),
 

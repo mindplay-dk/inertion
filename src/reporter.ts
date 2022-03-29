@@ -1,4 +1,4 @@
-import { Result } from "../src/api";
+import { Fact, Result } from "../src/api";
 import { UnknownError } from "../src/harness";
 import { FactoryMap } from "./container";
 import format from "pretty-format";
@@ -38,7 +38,7 @@ export interface Reporter {
   format(value: unknown): string;
   formatError(error: Error): string;
   formatDetails(values: unknown[]): string;
-  formatDiagnostic(actual: unknown, expected: unknown): string;
+  formatDiagnostic(fact: Fact): string;
 }
 
 const prefix = (prefix: string, text: string) => prefix + text.replace(/\n/g, `$&${" ".repeat(prefix.length)}`);
@@ -55,15 +55,15 @@ const formatDetails = ({ format }: Pick<Reporter, "format">) => (details: unknow
     : format(details);
 }
 
-const formatDiagnostic = ({ format }: Pick<Reporter, "format">) => (actual: unknown, expected: unknown): string => {
-  const $actual = format(actual);
-  const $expected = format(expected);
+const formatDiagnostic = ({ format }: Pick<Reporter, "format">) => (fact: Fact): string => {
+  const $actual = format(fact.actual);
+  const $expected = format(fact.expected);
 
-  const sameTypes = typeof actual === typeof expected;
+  const sameTypes = typeof fact.actual === typeof fact.expected;
 
   const singleLines = ($actual.indexOf("\n") === -1) && ($expected.indexOf("\n") === -1);
 
-  if (expected === undefined) {
+  if (! ("expected" in fact)) {
     return singleLines
       ? `  ${colors.bgRed.white(" × ")} ACTUAL: ${$actual}`
       : `  ${colors.bgRed.white(" × ")} ACTUAL:\n${prefix("      ", $actual)}`;
@@ -135,9 +135,9 @@ const printReport = ({ print, format, prefix, formatDiagnostic }: Pick<Reporter,
         print(`  × [${label}] ${title}`);
         print(`  └ ${location}`)
 
-        if (actual !== undefined || expected !== undefined) {
+        if ("actual" in fact || "expected" in fact) {
           print("");
-          print(formatDiagnostic(actual, expected));
+          print(formatDiagnostic(fact));
         }
 
         if (details.length) {

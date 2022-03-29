@@ -70,8 +70,6 @@ export function passed(...details: unknown[]): Fact {
   return {
     label: "passed",
     pass: true,
-    actual: undefined,
-    expected: undefined,
     details,
   };
 }
@@ -80,8 +78,6 @@ export function failed(...details: unknown[]): Fact {
   return {
     label: "failed",
     pass: false,
-    actual: undefined,
-    expected: undefined,
     details,
   };
 }
@@ -102,6 +98,7 @@ export default {
 //      https://www.npmjs.com/package/check-types
 //      https://www.npmjs.com/package/chai
 //      https://www.npmjs.com/package/is
+//      https://www.npmjs.com/package/is-what
 //      https://www.npmjs.com/package/typed-assert
 
 /**
@@ -122,7 +119,6 @@ export function assertion<F extends (...args: any[]) => boolean>(label: string, 
     label,
     pass: assert(...args.slice(0, assert.length)),
     actual: args[0],
-    expected: undefined,
     details: args.slice(1),
   });
 }

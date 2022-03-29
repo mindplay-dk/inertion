@@ -56,21 +56,21 @@ const formatDetails = ({ format }: Pick<Reporter, "format">) => (details: unknow
 }
 
 const formatDiagnostic = ({ format }: Pick<Reporter, "format">) => (fact: Fact): string => {
-  const $actual = format(fact.actual);
-  const $expected = format(fact.expected);
+  const actual = format(fact.actual);
+  const expected = format(fact.expected);
 
   const sameTypes = typeof fact.actual === typeof fact.expected;
 
-  const singleLines = ($actual.indexOf("\n") === -1) && ($expected.indexOf("\n") === -1);
+  const singleLines = (actual.indexOf("\n") === -1) && (expected.indexOf("\n") === -1);
 
   if (! ("expected" in fact)) {
     return singleLines
-      ? `  ${colors.bgRed.white(" × ")} ACTUAL: ${$actual}`
-      : `  ${colors.bgRed.white(" × ")} ACTUAL:\n${prefix("      ", $actual)}`;
+      ? `  ${colors.bgRed.white(" × ")} ACTUAL: ${actual}`
+      : `  ${colors.bgRed.white(" × ")} ACTUAL:\n${prefix("      ", actual)}`;
   }
   
   if (sameTypes && singleLines) {
-    const diff = diffWordsWithSpace($actual, $expected);
+    const diff = diffWordsWithSpace(actual, expected);
 
     return (
       `  ACTUAL:   ` + diff.map(({ value, added, removed }) => added ? "" : removed ? colors.bgRed.white(value) : value).join("") +
@@ -80,7 +80,7 @@ const formatDiagnostic = ({ format }: Pick<Reporter, "format">) => (fact: Fact):
   }
   
   if (sameTypes) {
-    return diffIndividualLines($actual, $expected)
+    return diffIndividualLines(actual, expected)
       .map(({ value, added, removed }) => 
         added
           ? `  ${colors.bgGreen.white(" √ ")} ${value}`
@@ -93,16 +93,16 @@ const formatDiagnostic = ({ format }: Pick<Reporter, "format">) => (fact: Fact):
 
   if (singleLines) {
     return (
-      `  ${colors.bgRed.white(" × ")} ACTUAL:   ${$actual}\n` +
-      `  ${colors.bgGreen.white(" √ ")} EXPECTED: ${$expected}`
+      `  ${colors.bgRed.white(" × ")} ACTUAL:   ${actual}\n` +
+      `  ${colors.bgGreen.white(" √ ")} EXPECTED: ${expected}`
     );
   }
 
   // different types, multiple lines - in this case, diffing doesn't make any sense:
 
   return (
-    `  ${colors.bgRed.white(" × ")} ACTUAL:\n` + prefix("      ", $actual) + "\n" +
-    `  ${colors.bgGreen.white(" √ ")} EXPECTED:\n` + prefix("      ", $expected)
+    `  ${colors.bgRed.white(" × ")} ACTUAL:\n` + prefix("      ", actual) + "\n" +
+    `  ${colors.bgGreen.white(" √ ")} EXPECTED:\n` + prefix("      ", expected)
   );
 }
 

@@ -59,7 +59,13 @@ const formatDiagnostic = ({ format }: Pick<Reporter, "format">) => (fact: Fact):
   const actual = format(fact.actual);
   const expected = format(fact.expected);
 
-  const sameTypes = typeof fact.actual === typeof fact.expected;
+  const firstLineOf = (text: string) => text.indexOf("\n") === -1
+    ? text
+    : text.match(/^.+(?=\n|$)/m)![0] + " ...";
+
+  const sameTypes = (typeof fact.actual === "object") && (fact.actual !== null)
+    ? firstLineOf(actual) === firstLineOf(expected)
+    : typeof fact.actual === typeof fact.expected;
 
   const singleLines = (actual.indexOf("\n") === -1) && (expected.indexOf("\n") === -1);
 
@@ -98,11 +104,11 @@ const formatDiagnostic = ({ format }: Pick<Reporter, "format">) => (fact: Fact):
     );
   }
 
-  // different types, multiple lines - in this case, diffing doesn't make any sense:
+  // different types, multiple lines - in this case, diffing or printing the full value isn't useful:
 
   return (
-    `  ${colors.bgRed.white(" × ")} ACTUAL:\n` + prefix("      ", actual) + "\n" +
-    `  ${colors.bgGreen.white(" √ ")} EXPECTED:\n` + prefix("      ", expected)
+    `  ${colors.bgRed.white(" × ")} ACTUAL:   ${firstLineOf(actual)}\n` +
+    `  ${colors.bgGreen.white(" √ ")} EXPECTED: ${firstLineOf(expected)}`
   );
 }
 

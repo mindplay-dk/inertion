@@ -15,6 +15,10 @@ function createSampleResults(): Result[] {
 
   // we want to see all combinations of actual/expected values and pass/fail:
 
+  class Foo {
+    public bar = [1, 2, 3];
+  }
+
   const valueModes: Record<string, Pick<Fact, "actual" | "expected">> = {
     "no actual or expected": { },
     "actual only (single-line)": { actual: "actual only, single-line" },
@@ -22,7 +26,7 @@ function createSampleResults(): Result[] {
     "actual and expected (single-line, same types)": { actual: "actual, single-line", expected: "expected, single-line" },
     "actual and expected (single-line, different types)": { actual: "actual", expected: 123 },
     "actual and expected (multi-line, same types)": { actual: { value: "actual\nmulti-line", same: true }, expected: { value: "expected\nmulti-line", same: true } },
-    "actual and expected (multi-line, different types)": { actual: "actual\nmulti-line", expected: { values: [1, 2, 3] } },
+    "actual and expected (multi-line, different types)": { actual: "actual", expected: new Foo() },
   };
 
   for (const [values, valueMode] of Object.entries(valueModes)) {

@@ -32,8 +32,8 @@ export type Tester<T extends MethodMap> = {
 export type Fact = {
   label: string;
   pass: boolean;
-  actual: unknown;
-  expected: unknown;
+  actual?: unknown;
+  expected?: unknown;
   details: unknown[];
 }
 

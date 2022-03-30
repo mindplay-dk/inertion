@@ -4,6 +4,7 @@ import { FactoryMap } from "./container";
 import format from "pretty-format";
 import { Change, diffLines, diffWordsWithSpace } from "diff";
 import colors from "ansi-colors";
+import { isSameType } from "./is-same-type";
 
 // TODO optional support for https://github.com/hildjj/node-inspect-extracted as alternative formatter?
 
@@ -43,6 +44,14 @@ export interface Reporter {
 
 const prefix = (prefix: string, text: string) => prefix + text.replace(/\n/g, `$&${" ".repeat(prefix.length)}`);
 
+const truncate = (text: string): string => {
+  const lines = text.split("\n").filter(Boolean);
+  
+  return lines.length > 1
+    ? `${lines[0].trim()} ... ${lines[lines.length-1].trim()}`
+    : lines[0].trim();
+}
+
 const formatError = ({ format }: Pick<Reporter, "format">) => (error: Error): string => {
   return (error instanceof UnknownError
     ? `Unknown error:\n` + format(error.value)
@@ -59,13 +68,7 @@ const formatDiagnostic = ({ format }: Pick<Reporter, "format">) => (fact: Fact):
   const actual = format(fact.actual);
   const expected = format(fact.expected);
 
-  const firstLineOf = (text: string) => text.indexOf("\n") === -1
-    ? text
-    : text.match(/^.+(?=\n|$)/m)![0] + " ...";
-
-  const sameTypes = (typeof fact.actual === "object") && (fact.actual !== null)
-    ? firstLineOf(actual) === firstLineOf(expected)
-    : typeof fact.actual === typeof fact.expected;
+  const sameTypes = isSameType(fact.actual, fact.expected);
 
   const singleLines = (actual.indexOf("\n") === -1) && (expected.indexOf("\n") === -1);
 
@@ -107,8 +110,8 @@ const formatDiagnostic = ({ format }: Pick<Reporter, "format">) => (fact: Fact):
   // different types, multiple lines - in this case, diffing or printing the full value isn't useful:
 
   return (
-    `  ${colors.bgRed.white(" × ")} ACTUAL:   ${firstLineOf(actual)}\n` +
-    `  ${colors.bgGreen.white(" √ ")} EXPECTED: ${firstLineOf(expected)}`
+    `  ${colors.bgRed.white(" × ")} ACTUAL:   ${truncate(actual)}\n` +
+    `  ${colors.bgGreen.white(" √ ")} EXPECTED: ${truncate(expected)}`
   );
 }
 

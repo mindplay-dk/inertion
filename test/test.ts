@@ -4,6 +4,7 @@ import assertions from "../src/assertions";
 import { run, setup, UnknownError } from "../src/harness";
 import { printReport, isSuccess, statusOf } from "../src/reporting";
 import { failingTest, passingTest, createTestWithContext, createTestWithCustomAssertion, testWithUnexpectedError, testWithUnexpectedUnknownError } from "./cases";
+import { isSameType } from "../src/is-same-type";
 
 const test = setup(assertions);
 
@@ -262,6 +263,43 @@ const test = setup(assertions);
 
       is.ok(results[0].error instanceof Error);
       is.ok(results[1].error instanceof UnknownError, "it should convert unknown error types to UnknownError instances");
+    }),
+
+    test(`can test for same types`, async is => {
+      class A {}
+      class B extends A {}
+
+      /**
+       * Tuples of same-type values
+       */
+      const values: unknown[][] = [
+        [1, 0.0, NaN],   // all numbers are numbers (even NaN)
+        ["a", ""],       // empty string is a string
+        [null],          // null is a distinct type
+        [undefined],     // undefined is a distinct type
+        [{}, { a: 1 }],  // all POJOs are the same type
+        [new A()],       // classes have distinct types
+        [new B()],       // every class is distinct
+        [[], [1, 2, 3]], // all arrays are the same type
+        [Symbol("a")],   // Symbols represent distinct types (see `unique symbol` in TypeScript)
+        [Symbol("a")],   // even similar Symbols have distinct types
+        // all functions are regarded as the same type:
+        [A, B, function () {}, () => {}, async function () {}, async () => {}],
+      ];
+
+      values.forEach((as, indexA) => {
+        values.forEach((bs, indexB) => {
+          as.forEach(a => {
+            bs.forEach(b => {
+              if (indexA === indexB) {
+                is.ok(isSameType(a, b), "same types", a, b);
+              } else {
+                is.ok(! isSameType(a, b), "not same types", a, b);
+              }
+            });
+          });
+        });
+      });
     }),
   ]);
 

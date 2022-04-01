@@ -1,0 +1,9 @@
+{
+  "type": "module",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "devDependencies": {
+    "inertion": "file:../inertion-0.1.0.tgz"
+  }
+}

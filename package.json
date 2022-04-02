@@ -1,9 +1,16 @@
 {
   "name": "inertion",
+  "version": "0.1.0",
   "source": "src/index.ts",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
   "engines": {
     "node": ">= 16"
   },

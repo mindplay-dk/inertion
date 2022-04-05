@@ -25,8 +25,7 @@ A minimal test module calls `setup` and uses the resulting `test` function to cr
 
 `hello.test.ts`
 ```ts
-import { setup } from "testlib";
-import * as assertions from "testlib/assertions";
+import { setup, assertions } from "inertion";
 
 const test = setup(assertions);
 
@@ -38,18 +37,18 @@ export default test(`hello world`, async is => {
 
 **What does an entry script look like?**
 
-A minimal test script will `run` the tests, might `reportTo` the `console`, and will most
+A minimal test script will `run` the tests, and then , and will most
 likely exit with `statusOf(results)`:
 
 ```ts
-import { run } from "testlib";
-import { report, statusOf } from "testlib/report";
+import { run } from "inertion";
+import { printReport, statusOf } from "inertion";
 import helloWorld from "./hello.test.ts";
 
 (async () => {
   const results = await run([helloWorld]);
 
-  reportTo(console, results);
+  printReport(results);
 
   process.exit(statusOf(results));
 })();
@@ -60,8 +59,7 @@ import helloWorld from "./hello.test.ts";
 You can provide a context factory to `setup` - every test will receive a new context from your factory function:
 
 ```ts
-import { setup } from "testlib";
-import * as assertions from "testlib/assertions";
+import { setup, assertions } from "inertion";
 
 const test = setup(assertions, () => ({
   get testSubject() {

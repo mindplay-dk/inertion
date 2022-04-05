@@ -1,0 +1,7 @@
+{
+  "type": "module",
+  "scripts": {
+    "install": "npm install ../inertion-0.1.0.tgz --no-save --no-package-lock",
+    "test": "node test.js"
+  }
+}

@@ -1,4 +1,4 @@
-This library aims to be the simplest, most unopionated testing library for Typescript.
+`inertion` is a testing library that aims to be **simple** and **safe**.
 
 It tries to honor the [Go language philosophy of testing](http://golang.org/doc/faq#How_do_I_write_a_unit_test) - paraphrasing:
 
@@ -7,17 +7,28 @@ It tries to honor the [Go language philosophy of testing](http://golang.org/doc/
 > it's one fewer language to learn and the approach keeps the tests straightforward and easy to understand.
 
 Unlike most test libraries, this one is not a *framework* - it does not automatically
-collect your tests, run your tests, print results to the console, or anything else.
-This is a *library* - it doesn't do anything without your say-so.
+collect your tests, run your tests, print results to the console, or do anything else.
+This is a *library* - it doesn't do anything unless you call up it's functions.
 
 Most test frameworks heavily rely on global state and side effects - things you
 wouldn't accept in the code you're testing. Why don't we have the same expectations
 for our testing tools? Because there is no shared state - because everything is literally
 just functions - this library can even reliably test itself, with no workarounds.
 
-The test harness is ~50 lines of code - everything else is optional, and the core of
-this package is really *mostly types* to support you in writing fast, robust, consistent
-and predictable test-suites.
+The test harness [very small](https://github.com/mindplay-dk/inertion/blob/master/src/harness.ts),
+and everything else is optional - the core of the package is *mostly types* that define
+generic relationships between assertions, tests and their dependencies, and the results.
+
+**What do reports look like?**
+
+Arguably, the most important part of the developer experience when testing, is what happens when
+your tests fail - a lot of time was invested here, and the built-in reporter has a number of
+different layouts for different conditions, based on actual and expected values and types.
+
+The output is minimally color-coded with errors highlighted in **red**, and the required
+corrections highlighted in **green** - here are some examples:
+
+![image](https://user-images.githubusercontent.com/103348/161727833-9f6c086f-1333-4803-8421-a99f9f98e945.png)
 
 **What do tests look like?**
 

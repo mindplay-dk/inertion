@@ -1,7 +1,7 @@
 import { Fact, Result } from "../src/api";
 import { UnknownError } from "../src/harness";
 import { FactoryMap } from "./container";
-import format from "pretty-format";
+import { plugins, format } from "pretty-format";
 import { Change, diffLines, diffWordsWithSpace } from "diff";
 import colors from "ansi-colors";
 import { isSameType } from "./is-same-type";
@@ -193,7 +193,7 @@ export const bootstrap: FactoryMap<Reporter> = {
   printReport,
   print: () => (line: string) => console.log(line),
   prefix: () => prefix,
-  format: () => (value: string) => format(value, { plugins: [formatString] }),
+  format: () => (value: string) => format(value, { plugins: [formatString, ...Object.values(plugins)] }),
   formatError,
   formatDetails,
   formatDiagnostic,

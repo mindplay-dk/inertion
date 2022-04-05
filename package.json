@@ -24,6 +24,7 @@
   "engines": {
     "node": ">= 16"
   },
+  "browserslist": "since 2020, Node 16",
   "scripts": {
     "test": "ts-node test/test.ts",
     "report": "ts-node test/report.ts",

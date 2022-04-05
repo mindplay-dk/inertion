@@ -1,6 +1,6 @@
 import process from "process";
 import { Result } from "../src/api";
-import assertions from "../src/assertions";
+import { assertions } from "../src/assertions";
 import { run, setup, UnknownError } from "../src/harness";
 import { printReport, isSuccess, statusOf } from "../src/reporting";
 import { failingTest, passingTest, createTestWithContext, createTestWithCustomAssertion, testWithUnexpectedError, testWithUnexpectedUnknownError } from "./cases";

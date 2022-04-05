@@ -1,4 +1,4 @@
-import assertions, { assertion } from "../src/assertions";
+import { assertion, assertions } from "../src/assertions";
 import { setup } from "../src/harness";
 
 const even = assertion("even", (num: number) => num % 2 === 0);

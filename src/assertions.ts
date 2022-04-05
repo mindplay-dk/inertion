@@ -82,7 +82,7 @@ export function failed(...details: unknown[]): Fact {
   };
 }
 
-export default {
+export const assertions = {
   ok,
   notOk,
   equal,

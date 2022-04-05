@@ -19,6 +19,14 @@ The test harness [very small](https://github.com/mindplay-dk/inertion/blob/maste
 and everything else is optional - the core of the package is *mostly types* that define
 generic relationships between assertions, tests and their dependencies, and the results.
 
+The package is fully self-contained (no dependencies) but internally bundles the following
+popular packages, all of which have 30M+ downloads per week:
+
+  * [`fast-deep-equal`](https://www.npmjs.com/package/fast-deep-equal) for equality assertions. (by default.)
+  * [`pretty-format`](https://www.npmjs.com/package/pretty-format) to render values in reports. ([all plugins](https://github.com/facebook/jest/tree/main/packages/pretty-format/src/plugins) enabled + some customizations.)
+  * [`diff`](https://www.npmjs.com/package/diff) to highlight errors and required corrections in reports.
+  * [`ansi-colors`](https://www.npmjs.com/package/ansi-colors) to color-code reports.
+
 **What do reports look like?**
 
 Arguably, the most important part of the developer experience when testing, is what happens when

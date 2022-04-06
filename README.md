@@ -27,7 +27,21 @@ popular packages, all of which have 30M+ downloads per week:
   * [`diff`](https://www.npmjs.com/package/diff) to highlight errors and required corrections in reports.
   * [`ansi-colors`](https://www.npmjs.com/package/ansi-colors) to color-code reports.
 
-**What do reports look like?**
+### Installation
+
+Node 16+, CommonJS or ES6:
+
+```
+npm install inertion
+```
+
+Vanilla ES6 `import` from CDN - Deno, modern browsers:
+
+```js
+import { setup, run } from "https://esm.sh/inertion";
+```
+
+### What do reports look like?
 
 Arguably, the most important part of the developer experience when testing, is what happens when
 your tests fail - a lot of time was invested here, and the built-in reporter has a number of
@@ -38,7 +52,7 @@ corrections highlighted in **green** - here are some examples:
 
 ![image](https://user-images.githubusercontent.com/103348/161727833-9f6c086f-1333-4803-8421-a99f9f98e945.png)
 
-**What do tests look like?**
+### What do tests look like?
 
 A minimal test module calls `setup` and uses the resulting `test` function to create tests:
 
@@ -54,7 +68,7 @@ export default test(`hello world`, async is => {
 });
 ```
 
-**What does an entry script look like?**
+### What does an entry script look like?
 
 A minimal test script will `run` the tests, and then , and will most
 likely exit with `statusOf(results)`:
@@ -73,7 +87,7 @@ import helloWorld from "./hello.test.ts";
 })();
 ```
 
-**What if your tests have common dependencies?**
+### What if your tests have common dependencies?
 
 You can provide a context factory to `setup` - every test will receive a new context from your factory function:
 
@@ -91,7 +105,7 @@ export default test(`hello world`, async (is, { testSubject }) => {
 });
 ```
 
-**What are the built-in assertions?**
+### What are the built-in assertions?
 
 The core philosophy of this package, is to have as few assertions as absolutely necessary - for
 the most part, you will use `ok` and `equal` and familiar language constructs, rather than an
@@ -115,7 +129,7 @@ With every assertion, you can optionally provide additional details after the re
 and it is considered best practice to at least include a string to explain *why* the assertion
 should pass.
 
-**How to test for expected exceptions?**
+### How to test for expected exceptions?
 
 Sticking to the philosophy of *use the language*, `is.passed` and `is.failed` should be used to
 test for expected exceptions - the pattern is very simple:
@@ -135,7 +149,7 @@ test(`something`, async is => {
 (The benefit of using this pattern, is it works with `async` and `await` and survives refactoring
 between `async` and non-`async`, without having to switch between different assertions.)
 
-**Why should I care?**
+### Why should I care?
 
 This library is very open-ended - there are almost no decisions baked-in.
 
@@ -143,7 +157,7 @@ This library is very open-ended - there are almost no decisions baked-in.
 * **Need some test helpers or mocks or whatever?** Use context factory-functions.
 * **Have different tests with different needs?** Create as many `test` functions as needed, with different assertions and context functions.
 
-**Have any other special needs?**
+#### Have any other special needs?
 
 This is truly just a library: assertions, reporters and test-runners are *just functions* -
 use as much or as little as you need, import from third-party libraries, or write your own.

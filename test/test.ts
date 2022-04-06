@@ -1,6 +1,6 @@
 import process from "process";
 import { Result } from "../src/api";
-import { assertions } from "../src/assertions";
+import { assertions, createAssertions } from "../src/assertions";
 import { run, setup, UnknownError } from "../src/harness";
 import { printReport, isSuccess, statusOf } from "../src/reporting";
 import { failingTest, passingTest, createTestWithContext, createTestWithCustomAssertion, testWithUnexpectedError, testWithUnexpectedUnknownError } from "./cases";
@@ -300,6 +300,27 @@ const test = setup(assertions);
           });
         });
       });
+    }),
+
+    test(`can map predicates to assertions`, async is => {
+      const a = createAssertions({
+        truthy(value: unknown) {
+          return !!value;
+        },
+        falsy(value: unknown) {
+          return !value;
+        }
+      });
+
+      is.equal(a.truthy(true).label, "truthy");
+      is.equal(a.falsy(false).label, "falsy");
+      is.equal(a.truthy(true).actual, true);
+      is.equal(a.truthy(false).actual, false);
+      is.equal(a.truthy(true).expected, undefined, "predicates have no expected value");
+      is.equal(a.truthy(true).details, []);
+      is.equal(a.truthy(true, 1, 2).details, [1, 2]);
+      is.equal(a.truthy(true).pass, true);
+      is.equal(a.truthy(false).pass, false);
     }),
   ]);
 

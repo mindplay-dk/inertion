@@ -93,13 +93,7 @@ export const assertions = {
   failed,
 };
 
-// TODO check compatibility of `assertion` with the following:
-//      https://www.npmjs.com/package/validator
-//      https://www.npmjs.com/package/check-types
-//      https://www.npmjs.com/package/chai
-//      https://www.npmjs.com/package/is
-//      https://www.npmjs.com/package/is-what
-//      https://www.npmjs.com/package/typed-assert
+type Predicate = (...args: any[]) => boolean;
 
 /**
  * Generates a test-method from a simple assertion function.
@@ -110,15 +104,36 @@ export const assertions = {
  * function will not have an `expected` value, and therefore will
  * be unable to display as a diff in reporters.
  * 
- * Works with predicate libraries such as `validator` or `is`.
+ * Works with predicates from libraries such as `validator`, `is`, etc.
  * 
  * @see https://www.npmjs.com/package/validator
  */
-export function assertion<F extends (...args: any[]) => boolean>(label: string, assert: F) {
+export function assertion<F extends Predicate>(label: string, assert: F) {
   return (...args: [...params: Parameters<F>, ...details: unknown[]]): Fact => ({
     label,
     pass: assert(...args.slice(0, assert.length)),
     actual: args[0],
     details: args.slice(1),
   });
+}
+
+/**
+ * Generates test-methods from a map of simple assertion functions.
+ * 
+ * Works with predicates libraries such as `validator`, `is`, etc.
+ * 
+ * TODO check compatibility with the following:
+ *      https://www.npmjs.com/package/validator
+ *      https://www.npmjs.com/package/check-types
+ *      https://www.npmjs.com/package/chai
+ *      https://www.npmjs.com/package/is
+ *      https://www.npmjs.com/package/is-what
+ *      https://www.npmjs.com/package/typed-assert
+ */
+export function createAssertions<T extends Record<string, Predicate>>(obj: T): {
+  [P in keyof T]: (...args: [...params: Parameters<T[P]>, ...details: unknown[]]) => Fact
+} {
+  const entries = Object.entries(obj).map(([label, assert]) => [label, assertion(label, assert)]);
+
+  return Object.fromEntries(entries);
 }

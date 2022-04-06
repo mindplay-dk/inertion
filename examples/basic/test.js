@@ -1,9 +1,10 @@
 import { run } from "inertion";
 import { printReport, statusOf } from "inertion";
-import add from "./src/add.test.js";
 
 (async () => {
-  const results = await run([add]);
+  const results = await run([
+    (await import("./src/add.test.js")).default,
+  ]);
 
   printReport(results);
 

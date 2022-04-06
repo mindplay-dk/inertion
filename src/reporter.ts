@@ -3,7 +3,7 @@ import { UnknownError } from "../src/harness";
 import { FactoryMap } from "./container";
 import { plugins, format } from "pretty-format";
 import { Change, diffLines, diffWordsWithSpace } from "diff";
-import colors from "ansi-colors";
+import colors from "./ansi-colors";
 import { isSameType } from "./is-same-type";
 
 // TODO optional support for https://github.com/hildjj/node-inspect-extracted as alternative formatter?

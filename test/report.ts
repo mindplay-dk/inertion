@@ -27,6 +27,18 @@ function createSampleResults(): Result[] {
     "actual and expected (single-line, different types)": { actual: "actual", expected: 123 },
     "actual and expected (multi-line, same types)": { actual: { value: "actual\nmulti-line", same: true }, expected: { value: "expected\nmulti-line", same: true } },
     "actual and expected (multi-line, different types)": { actual: "actual", expected: new Foo() },
+    // TODO additions and removals still look a little confusing maybe?
+    //      especially additions, where the error is highlighted with a green checkmark.
+    //      I mean, it's "working as intended" and correctly highlights what would make
+    //      the test pass - but when there's no red x pointing to an unexpected value,
+    //      it can seem a bit ambiguous maybe, like it's indicating something is correct...
+    //      I'm unsure if this can or should be improved somehow - perhaps it's a matter
+    //      of learning the meaning of green checkmark as "this would make it right",
+    //      although this initial confusion is what I was trying to eliminate from the
+    //      typical "added/removed" indicators of a normal diff output...
+    //      I will leave this note here while I'm thinking about it. Suggestions welcome? 😄
+    "actual and expected (multi-line, additions)": { actual: [1, 2], expected: [1, 2, 3] },
+    "actual and expected (multi-line, removals)": { actual: [1, 2, 3], expected: [1, 2] },
   };
 
   for (const [values, valueMode] of Object.entries(valueModes)) {

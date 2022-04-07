@@ -138,15 +138,14 @@ type PredicatesToAssertions<T> = RemoveNevers<{
 /**
  * Generates test-methods from a map of simple assertion functions.
  * 
- * Works with predicates libraries such as `validator`, `is`, etc.
+ * Works with predicate libraries - for example:
  * 
- * TODO check compatibility with the following:
- *      https://www.npmjs.com/package/validator
- *      https://www.npmjs.com/package/check-types
- *      https://www.npmjs.com/package/chai
- *      https://www.npmjs.com/package/is
- *      https://www.npmjs.com/package/is-what
- *      https://www.npmjs.com/package/typed-assert
+ *     https://www.npmjs.com/package/validator      √ works (requires @types/validator)
+ *     https://www.npmjs.com/package/is             ~ works for predicates only (requires @types/is)
+ *     https://www.npmjs.com/package/check-types    ~ works for predicates only (requires @types/check-types)
+ *     https://www.npmjs.com/package/is-what        ~ works, but no support for type-guards
+ *     https://www.npmjs.com/package/chai           × chai throws errors (not predicates)
+ *     https://www.npmjs.com/package/typed-assert   × assertion functions (not predicates)
  */
 export function createAssertions<T>(obj: T): PredicatesToAssertions<T> {
   const entries = Object.entries(obj).map(([label, assert]) => [

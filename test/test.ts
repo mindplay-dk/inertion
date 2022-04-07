@@ -5,6 +5,7 @@ import { run, setup, UnknownError } from "../src/harness";
 import { printReport, isSuccess, statusOf } from "../src/reporting";
 import { failingTest, passingTest, createTestWithContext, createTestWithCustomAssertion, testWithUnexpectedError, testWithUnexpectedUnknownError } from "./cases";
 import { isSameType } from "../src/is-same-type";
+import validator from "validator";
 
 const test = setup(assertions);
 
@@ -321,6 +322,15 @@ const test = setup(assertions);
       is.equal(a.truthy(true, 1, 2).details, [1, 2]);
       is.equal(a.truthy(true).pass, true);
       is.equal(a.truthy(false).pass, false);
+    }),
+
+    test(`can use a third-party validator library`, async is => {
+      const a = createAssertions(validator);
+
+      is.equal(a.isCreditCard("4929 7226 5379 7141").pass, true);
+      is.equal(a.isCreditCard("4929 7226 5379 7149").pass, false);
+
+      is.equal((a as any).version, undefined, "non-function properties are omitted");
     }),
   ]);
 

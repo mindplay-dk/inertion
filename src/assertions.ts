@@ -95,6 +95,10 @@ export const assertions = {
 
 type Predicate = (...args: any[]) => boolean;
 
+type PredicateToAssertion<F extends (...args: any) => any> = {
+  (...args: [...params: Parameters<F>, ...details: unknown[]]): Fact;
+}
+
 /**
  * Generates a test-method from a simple assertion function.
  * 
@@ -108,14 +112,28 @@ type Predicate = (...args: any[]) => boolean;
  * 
  * @see https://www.npmjs.com/package/validator
  */
-export function assertion<F extends Predicate>(label: string, assert: F) {
-  return (...args: [...params: Parameters<F>, ...details: unknown[]]): Fact => ({
+export function assertion<F extends Predicate>(label: string, assert: F): PredicateToAssertion<F> {
+  return (...args) => ({
     label,
     pass: assert(...args.slice(0, assert.length)),
     actual: args[0],
     details: args.slice(1),
   });
 }
+
+// see https://www.piotrl.net/typescript-condition-subset-types/
+
+type RemoveNevers<T> = Pick<T, {
+  [K in keyof T]: T[K] extends never
+    ? never
+    : K
+}[keyof T]>;
+
+type PredicatesToAssertions<T> = RemoveNevers<{
+  [K in keyof T]: T[K] extends Predicate
+    ? PredicateToAssertion<T[K]>
+    : never
+}>;
 
 /**
  * Generates test-methods from a map of simple assertion functions.
@@ -130,10 +148,13 @@ export function assertion<F extends Predicate>(label: string, assert: F) {
  *      https://www.npmjs.com/package/is-what
  *      https://www.npmjs.com/package/typed-assert
  */
-export function createAssertions<T extends Record<string, Predicate>>(obj: T): {
-  [P in keyof T]: (...args: [...params: Parameters<T[P]>, ...details: unknown[]]) => Fact
-} {
-  const entries = Object.entries(obj).map(([label, assert]) => [label, assertion(label, assert)]);
+export function createAssertions<T>(obj: T): PredicatesToAssertions<T> {
+  const entries = Object.entries(obj).map(([label, assert]) => [
+    label,
+    typeof assert === "function"
+      ? assertion(label, assert)
+      : undefined
+  ]);
 
   return Object.fromEntries(entries);
 }

@@ -10,9 +10,11 @@ export type TestMethod = {
 
 export type ContextFactory<T> = () => T;
 
-export type TestFactory<T extends MethodMap, C> = {
-  (description: string, spec: Spec<T, C>): Test<T, C>;
+export type TestRegistry<T extends MethodMap, C> = {
+  (description: string, spec: Spec<T, C>): void;
 }
+
+export type TestSuite<T extends MethodMap, C> = Iterable<Test<T, C>>;
 
 export type Spec<T extends MethodMap, C> = {
   (tester: Tester<T>, context: C): Promise<void>;

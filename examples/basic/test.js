@@ -1,10 +1,8 @@
-import { run } from "inertion";
-import { printReport, statusOf } from "inertion";
+import { run, printReport, statusOf } from "inertion";
+import { test } from "./src/add.test.js";
 
 (async () => {
-  const results = await run([
-    (await import("./src/add.test.js")).default,
-  ]);
+  const results = await run(test);
 
   printReport(results);
 

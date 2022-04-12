@@ -1,16 +1,28 @@
-import { Check, ContextFactory, MethodMap, Result, Test, Tester, TestFactory } from "./api";
+import { Check, ContextFactory, MethodMap, Result, Test, Tester, TestRegistry, TestSuite } from "./api";
 
-export function setup<T extends MethodMap, C>(methods: T, createContext?: ContextFactory<C>): TestFactory<T, C> {
-  return (description, spec) => ({
-    methods,
-    createContext: createContext || (() => null as any),
-    description,
-    spec,
-  });
+export function setup<T extends MethodMap, C>(methods: T, createContext?: ContextFactory<C>): TestSuite<T, C> & TestRegistry<T, C> {
+  const tests: Array<Test<T, C>> = [];
+
+  const registry: TestRegistry<T, C> = (description, spec) => {
+    tests.push({
+      methods,
+      createContext: createContext || (() => null as any),
+      description,
+      spec,
+    });
+  };
+
+  const suite = {
+    [Symbol.iterator]() {
+      return tests[Symbol.iterator]();
+    }
+  };
+
+  return Object.assign(registry, suite);
 }
 
-export async function run(tests: Array<Test<any,any>>): Promise<Result[]> {
-  return Promise.all(tests.map(runTest));
+export async function run(...tests: Array<Iterable<Test<any,any>>>): Promise<Result[]> {
+  return Promise.all(tests.map(test => [...test].map(runTest)).flat());
 }
 
 /**

@@ -35,7 +35,10 @@ Node 16+, CommonJS or ES6:
 npm install inertion
 ```
 
-Vanilla ES6 `import` from CDN - Deno, modern browsers:
+Under Node, you can use `ts-node` to run tests directly. You can use `nyc` for code-coverage.
+Have a look at `scripts` and `devDependencies` in `package.json` of this project for reference.
+
+In Deno and modern browsers, you can use vanilla ES6 `import` from a CDN:
 
 ```js
 import { setup, run } from "https://esm.sh/inertion";

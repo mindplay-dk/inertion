@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "install": "npm install ../inertion-0.1.1.tgz --no-save --no-package-lock",
+    "test": "ts-node test.ts",
+    "cover": "nyc ts-node test.ts"
+  },
+  "devDependencies": {
+    "nyc": "^15.1.0",
+    "ts-node": "^10.4.0"
+  }
+}

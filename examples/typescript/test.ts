@@ -1,9 +1,8 @@
 import { run, printReport, statusOf } from "inertion";
+import { test } from "./src/add.test";
 
 (async () => {
-  const results = await run([
-    (await import("./src/add.test")).default,
-  ]);
+  const results = await run(test);
 
   printReport(results);
 

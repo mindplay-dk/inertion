@@ -63,9 +63,9 @@ A minimal test module calls `setup` and uses the resulting `test` function to cr
 ```ts
 import { setup, assertions } from "inertion";
 
-const test = setup(assertions);
+export const test = setup(assertions);
 
-export default test(`hello world`, async is => {
+test(`hello world`, async is => {
   is.ok(true, "all good");
   is.equal(1, 2, "oh no, so wrong");
 });
@@ -73,16 +73,16 @@ export default test(`hello world`, async is => {
 
 ### What does an entry script look like?
 
-A minimal test script will `run` the tests, and then , and will most
+A minimal test script will `run` the tests, and then most
 likely exit with `statusOf(results)`:
 
 ```ts
 import { run } from "inertion";
 import { printReport, statusOf } from "inertion";
-import helloWorld from "./hello.test.ts";
+import test from "./hello.test.ts";
 
 (async () => {
-  const results = await run([helloWorld]);
+  const results = await run(test);
 
   printReport(results);
 
@@ -97,13 +97,13 @@ You can provide a context factory to `setup` - every test will receive a new con
 ```ts
 import { setup, assertions } from "inertion";
 
-const test = setup(assertions, () => ({
+export const test = setup(assertions, () => ({
   get testSubject() {
     return new TestSubject("abc", [1,2,3]);
   }
 }));
 
-export default test(`hello world`, async (is, { testSubject }) => {
+test(`hello world`, async (is, { testSubject }) => {
   is.ok(testSubject instanceof TestSubject, "all good");
 });
 ```

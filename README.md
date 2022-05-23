@@ -57,7 +57,7 @@ corrections highlighted in **green** - here are some examples:
 
 ### What do tests look like?
 
-A minimal test module calls `setup` and uses the resulting `test` function to create tests:
+A minimal test module calls `setup` and uses the resulting `test` function to add tests:
 
 `hello.test.ts`
 ```ts
@@ -77,8 +77,7 @@ A minimal test script will `run` the tests, and then most
 likely exit with `statusOf(results)`:
 
 ```ts
-import { run } from "inertion";
-import { printReport, statusOf } from "inertion";
+import { run, printReport, statusOf } from "inertion";
 import test from "./hello.test.ts";
 
 (async () => {
@@ -89,6 +88,38 @@ import test from "./hello.test.ts";
   process.exit(statusOf(results));
 })();
 ```
+
+### Do I have to manually `import` each test?
+
+Under Node.JS, you can use e.g. `fast-glob` or any library of your choice to
+automatically locate your tests - adding this to your entry-script is literally
+two lines of code:
+
+```ts
+import { run, printReport, statusOf } from "inertion";
+import { test } from "./test/harness.js";
+import glob from "fast-glob";
+import process from "process";
+
+(async () => {
+  const files = glob.sync("**/*.test.ts", { absolute: true });
+
+  await Promise.all(files.map(file => import(file)));
+
+  const results = await run(test);
+
+  printReport(results);
+
+  process.exit(statusOf(results));
+})();
+```
+
+##### Why isn't this just built-in?
+
+- Because it's already *easy*, if you want it.
+- Owning this bit of code gives you control over paths, filename conventions, etc.
+- The library is intended to work in the browser - `glob` doesn't work in browsers.
+- This allows you to use multiple test-harnesses with different assertions, context, etc.
 
 ### What if your tests have common dependencies?
 

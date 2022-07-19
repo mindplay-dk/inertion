@@ -4,9 +4,9 @@ export type MethodMap = {
   [name: string]: TestMethod;
 }
 
-export type TestMethod = {
-  (...args: any[]): Fact;
-}
+export type Collect = (fact: Fact) => void;
+
+export type TestMethod = (collect: Collect) => (...args: any[]) => void; // TODO Promise<void> return-type would allow for async assertion-methods - do we want that?
 
 export type ContextFactory<T> = () => T;
 
@@ -28,7 +28,7 @@ export type Test<T extends MethodMap, C> = {
 }
 
 export type Tester<T extends MethodMap> = {
-  [K in keyof T]: (...args: Parameters<T[K]>) => void;
+  [K in keyof T]: ReturnType<T[K]>;
 }
 
 export type Fact = {

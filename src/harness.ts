@@ -1,4 +1,4 @@
-import { Check, ContextFactory, MethodMap, Result, Test, Tester, TestRegistry, TestSuite } from "./api";
+import { Check, Collect, Fact, ContextFactory, MethodMap, Result, Test, Tester, TestRegistry, TestSuite } from "./api";
 
 export function setup<T extends MethodMap, C>(methods: T, createContext?: ContextFactory<C>): TestSuite<T, C> & TestRegistry<T, C> {
   const tests: Array<Test<T, C>> = [];
@@ -43,16 +43,18 @@ export async function runTest<T extends MethodMap, C>({ methods, createContext, 
     checks.push(check);
   };
 
+  const collect: Collect = (fact: Fact) => {
+    const location = new Error().stack!
+      .split("\n")[4]
+      .replace(/^\s+at /, "");
+
+    checked({ location, fact });
+  };
+
   const tester = Object.fromEntries(
     Object.entries(methods)
       .map(([name, assertion]) => [name, (...args: any) => {
-        const location = new Error().stack!
-          .split("\n")[2]
-          .replace(/^\s+at /, "");
-
-        const fact = assertion(...args);
-
-        checked({ location, fact });
+        const fact = assertion(collect)(...args);
       }])
   ) as Tester<T>;
 

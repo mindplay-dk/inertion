@@ -1,5 +1,5 @@
 import process from "process";
-import { Result } from "../src/api";
+import { Result, Fact, TestMethod } from "../src/api";
 import { assertions, createAssertions } from "../src/assertions";
 import { run, setup, UnknownError } from "../src/harness";
 import { printReport, isSuccess, statusOf } from "../src/reporting";
@@ -126,30 +126,40 @@ test(`can bootstrap test-methods from assertions`, async is => {
   );
 });
 
+function collect<T extends TestMethod>(method: T) {
+  return (...args: Parameters<ReturnType<T>>) => {
+    var facts: Fact[] = [];
+
+    method(fact => { facts.push(fact) })(...args);
+
+    return facts;
+  }
+}
+
 test(`ok/notOk assertions make strict boolean comparisons`, async is => {
   const a = {}, b = {};
 
   is.equal(
-    assertions.ok(true, a, b),
-    { label: "ok", pass: true, actual: true, expected: true, details: [a, b] }
+    collect(assertions.ok)(true, a, b),
+    [{ label: "ok", pass: true, actual: true, expected: true, details: [a, b] }]
   );
 
   is.equal(
-    assertions.notOk(false, a, b),
-    { label: "notOk", pass: true, actual: false, expected: false, details: [a, b] }
+    collect(assertions.notOk)(false, a, b),
+    [{ label: "notOk", pass: true, actual: false, expected: false, details: [a, b] }]
   );
 
   const nonBooleans: any[] = ["false", "true", 1, 0, null, undefined, {}];
 
   for (const actual of nonBooleans) {
     is.equal(
-      assertions.ok(actual, a, b),
-      { label: "ok", pass: false, actual, expected: true, details: [a, b] }
+      collect(assertions.ok)(actual, a, b),
+      [{ label: "ok", pass: false, actual, expected: true, details: [a, b] }]
     );
 
     is.equal(
-      assertions.notOk(actual, a, b),
-      { label: "notOk", pass: false, actual, expected: false, details: [a, b] }
+      collect(assertions.notOk)(actual, a, b),
+      [{ label: "notOk", pass: false, actual, expected: false, details: [a, b] }]
     );
   }
 });
@@ -168,13 +178,13 @@ test(`same/notSame assertions make strict (identity) comparisons`, async is => {
 
   for (const [actual, expected] of same) {
     is.equal(
-      assertions.same(actual, expected, a, b),
-      { label: "same", pass: true, actual, expected, details: [a, b] }
+      collect(assertions.same)(actual, expected, a, b),
+      [{ label: "same", pass: true, actual, expected, details: [a, b] }]
     );
 
     is.equal(
-      assertions.notSame(actual, expected, a, b),
-      { label: "notSame", pass: false, actual, expected, details: [a, b] }
+      collect(assertions.notSame)(actual, expected, a, b),
+      [{ label: "notSame", pass: false, actual, expected, details: [a, b] }]
     );
   }
 
@@ -187,13 +197,13 @@ test(`same/notSame assertions make strict (identity) comparisons`, async is => {
 
   for (const [actual, expected] of notSame) {
     is.equal(
-      assertions.same(actual, expected, a, b),
-      { label: "same", pass: false, actual, expected, details: [a, b] }
+      collect(assertions.same)(actual, expected, a, b),
+      [{ label: "same", pass: false, actual, expected, details: [a, b] }]
     );
 
     is.equal(
-      assertions.notSame(actual, expected, a, b),
-      { label: "notSame", pass: true, actual, expected, details: [a, b] }
+      collect(assertions.notSame)(actual, expected, a, b),
+      [{ label: "notSame", pass: true, actual, expected, details: [a, b] }]
     );
   }
 });
@@ -212,13 +222,13 @@ test(`equal/notEqual assertions make deep comparisons (using fast-deep-equal)`, 
 
   for (const [actual, expected] of equals) {
     is.equal(
-      assertions.equal(actual, expected, a, b),
-      { label: "equal", pass: true, actual, expected, details: [a, b] },
+      collect(assertions.equal)(actual, expected, a, b),
+      [{ label: "equal", pass: true, actual, expected, details: [a, b] }],
     );  
 
     is.equal(
-      assertions.notEqual(actual, expected, a, b),
-      { label: "notEqual", pass: false, actual, expected, details: [a, b] },
+      collect(assertions.notEqual)(actual, expected, a, b),
+      [{ label: "notEqual", pass: false, actual, expected, details: [a, b] }],
     );
   }
 
@@ -232,13 +242,13 @@ test(`equal/notEqual assertions make deep comparisons (using fast-deep-equal)`, 
 
   for (const [actual, expected] of nonEquals) {
     is.equal(
-      assertions.equal(actual, expected, a, b),
-      { label: "equal", pass: false, actual, expected, details: [a, b] },
+      collect(assertions.equal)(actual, expected, a, b),
+      [{ label: "equal", pass: false, actual, expected, details: [a, b] }],
     );  
 
     is.equal(
-      assertions.notEqual(actual, expected, a, b),
-      { label: "notEqual", pass: true, actual, expected, details: [a, b] },
+      collect(assertions.notEqual)(actual, expected, a, b),
+      [{ label: "notEqual", pass: true, actual, expected, details: [a, b] }],
     );
   }
 });
@@ -247,13 +257,13 @@ test(`can manually pass or fail tests`, async is => {
   const a = {}, b = {};
 
   is.equal(
-    assertions.passed(a, b),
-    { label: "passed", pass: true, details: [a, b] },
+    collect(assertions.passed)(a, b),
+    [{ label: "passed", pass: true, details: [a, b] }],
   );
 
   is.equal(
-    assertions.failed(a, b),
-    { label: "failed", pass: false, details: [a, b] },
+    collect(assertions.failed)(a, b),
+    [{ label: "failed", pass: false, details: [a, b] }],
   );
 });
 
@@ -311,22 +321,22 @@ test(`can map predicates to assertions`, async is => {
     }
   });
 
-  is.equal(a.truthy(true).label, "truthy");
-  is.equal(a.falsy(false).label, "falsy");
-  is.equal(a.truthy(true).actual, true);
-  is.equal(a.truthy(false).actual, false);
-  is.equal(a.truthy(true).expected, undefined, "predicates have no expected value");
-  is.equal(a.truthy(true).details, []);
-  is.equal(a.truthy(true, 1, 2).details, [1, 2]);
-  is.equal(a.truthy(true).pass, true);
-  is.equal(a.truthy(false).pass, false);
+  is.equal(collect(a.truthy)(true)[0].label, "truthy");
+  is.equal(collect(a.falsy)(false)[0].label, "falsy");
+  is.equal(collect(a.truthy)(true)[0].actual, true);
+  is.equal(collect(a.truthy)(false)[0].actual, false);
+  is.equal(collect(a.truthy)(true)[0].expected, undefined, "predicates have no expected value");
+  is.equal(collect(a.truthy)(true)[0].details, []);
+  is.equal(collect(a.truthy)(true, 1, 2)[0].details, [1, 2]);
+  is.equal(collect(a.truthy)(true)[0].pass, true);
+  is.equal(collect(a.truthy)(false)[0].pass, false);
 });
 
 test(`can use a third-party validator library`, async is => {
   const a = createAssertions(validator);
 
-  is.equal(a.isCreditCard("4929 7226 5379 7141").pass, true);
-  is.equal(a.isCreditCard("4929 7226 5379 7149").pass, false);
+  is.equal(collect(a.isCreditCard)("4929 7226 5379 7141")[0].pass, true);
+  is.equal(collect(a.isCreditCard)("4929 7226 5379 7149")[0].pass, false);
 
   is.equal((a as any).version, undefined, "non-function properties are omitted");
 });

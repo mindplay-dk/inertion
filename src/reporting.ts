@@ -3,7 +3,7 @@ import { createContainer } from "./container";
 import { bootstrap, isFailed, Reporter } from "./reporter";
 
 export function statusOf(results: Result[]): number {
-  return isSuccess(results) ? 1 : 0;
+  return isSuccess(results) ? 0 : 1;
 }
 
 export function isSuccess(results: Result[]): boolean {

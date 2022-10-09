@@ -134,14 +134,12 @@ const printReport = ({ print, format, prefix, formatDiagnostic }: Pick<Reporter,
     print("");
     
     for (const { fact, location } of result.checks) {
-      const { pass, label, actual, expected } = fact;
-
-      if (! pass) {
+      if (! fact.pass) {
         const [title, ...details] = typeof fact.details[0] === "string" && fact.details[0].indexOf("\n") === -1
           ? fact.details
           : ["", ...fact.details];
   
-        print(`  × [${label}] ${title}`);
+        print(`  × [${fact.label}] ${title}`);
         print(`  └ ${location}`)
 
         if ("actual" in fact || "expected" in fact) {

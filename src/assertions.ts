@@ -1,24 +1,24 @@
 import isEqual from "fast-deep-equal";
-import { Fact } from "./api";
+import { Collect } from "./api";
 
-export function ok(actual: boolean, ...details: unknown[]): Fact {
-  return {
+export const ok = (collect: Collect) => (actual: boolean, ...details: unknown[]) => {
+  collect({
     label: "ok",
     pass: actual === true,
     actual,
     expected: true,
     details,
-  };
+  });
 }
 
-export function notOk(actual: boolean, ...details: unknown[]): Fact {
-  return {
+export const notOk = (collect: Collect) => (actual: boolean, ...details: unknown[]) => {
+  collect({
     label: "notOk",
     pass: actual === false,
     actual,
     expected: false,
     details,
-  };
+  });
 }
 
 // TODO IOC for `equal` and `notEqual`: must support at least all of the following:
@@ -26,60 +26,60 @@ export function notOk(actual: boolean, ...details: unknown[]): Fact {
 //      https://www.npmjs.com/package/deep-equal
 //      https://www.npmjs.com/package/deep-is
 
-export function equal<T>(actual: T, expected: T, ...details: unknown[]): Fact {
-  return {
+export const equal = (collect: Collect) => <T>(actual: T, expected: T, ...details: unknown[]) => {
+  collect({
     label: "equal",
     pass: isEqual(actual, expected),
     actual,
     expected,
     details,
-  };
+  });
 }
 
-export function notEqual<T>(actual: T, expected: T, ...details: unknown[]): Fact {
-  return {
+export const notEqual = (collect: Collect) => <T>(actual: T, expected: T, ...details: unknown[]) => {
+  collect({
     label: "notEqual",
     pass: ! isEqual(actual, expected),
     actual,
     expected,
     details,
-  };
+  });
 }
 
-export function same<T>(actual: T, expected: T, ...details: unknown[]): Fact {
-  return {
+export const same = (collect: Collect) => <T>(actual: T, expected: T, ...details: unknown[]) => {
+  collect({
     label: "same",
     pass: Object.is(actual, expected),
     actual,
     expected,
     details,
-  };
+  });
 }
 
-export function notSame<T>(actual: T, expected: T, ...details: unknown[]): Fact {
-  return {
+export const notSame = (collect: Collect) => <T>(actual: T, expected: T, ...details: unknown[]) => {
+  collect({
     label: "notSame",
     pass: ! Object.is(actual, expected),
     actual,
     expected,
     details,
-  };
+  });
 }
 
-export function passed(...details: unknown[]): Fact {
-  return {
+export const passed = (collect: Collect) => (...details: unknown[]) => {
+  collect({
     label: "passed",
     pass: true,
     details,
-  };
+  });
 }
 
-export function failed(...details: unknown[]): Fact {
-  return {
+export const failed = (collect: Collect) => (...details: unknown[]) => {
+  collect({
     label: "failed",
     pass: false,
     details,
-  };
+  });
 }
 
 export const assertions = {
@@ -95,9 +95,8 @@ export const assertions = {
 
 type Predicate = (...args: any[]) => boolean;
 
-type PredicateToAssertion<F extends (...args: any) => any> = {
-  (...args: [...params: Parameters<F>, ...details: unknown[]]): Fact;
-}
+type PredicateToAssertion<F extends (...args: any) => any> =
+  (collect: Collect) => (...args: [...params: Parameters<F>, ...details: unknown[]]) => void;
 
 /**
  * Generates a test-method from a simple assertion function.
@@ -113,7 +112,7 @@ type PredicateToAssertion<F extends (...args: any) => any> = {
  * @see https://www.npmjs.com/package/validator
  */
 export function assertion<F extends Predicate>(label: string, assert: F): PredicateToAssertion<F> {
-  return (...args) => ({
+  return collect => (...args) => collect({
     label,
     pass: assert(...args.slice(0, assert.length)),
     actual: args[0],

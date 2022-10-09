@@ -1,4 +1,4 @@
-import { Check, ContextFactory, MethodMap, Result, Test, Tester, TestRegistry, TestSuite } from "./api";
+import { Check, Collect, Fact, ContextFactory, MethodMap, Result, Test, Tester, TestRegistry, TestSuite } from "./api";
 
 export function setup<T extends MethodMap, C>(methods: T, createContext?: ContextFactory<C>): TestSuite<T, C> & TestRegistry<T, C> {
   const tests: Array<Test<T, C>> = [];
@@ -43,14 +43,16 @@ export async function runTest<T extends MethodMap, C>({ methods, createContext, 
     checks.push(check);
   };
 
+  const collect: Collect = (fact: Fact) => {
+    const location = getLocation(new Error(), 3);
+
+    checked({ location, fact });
+  };
+
   const tester = Object.fromEntries(
     Object.entries(methods)
       .map(([name, assertion]) => [name, (...args: any) => {
-        const location = getLocation(new Error());
-
-        const fact = assertion(...args);
-
-        checked({ location, fact });
+        const fact = assertion(collect)(...args);
       }])
   ) as Tester<T>;
 
@@ -82,14 +84,14 @@ const STACK_TRACE_PATTERN = /^\s+at /; // matches the start of stack-trace lines
 
 const PATH_PATTERN = /\(([^)]+)\)/g; // matches path in e.g.: `null.<anonymous> (/home/mindplay/workspace/funky-test/test/cases.ts:35:6)`
 
-export function getLocation(error: Error) {
+export function getLocation(error: Error, depth: number) {
   const stack = error.stack;
 
   if (stack) {
     const line = stack
       .split("\n")
       .filter(line => STACK_TRACE_PATTERN.test(line)) // remove preamble under Node
-      .at(1);
+      .at(depth);
 
     if (line) {
       const clean = line.replace(STACK_TRACE_PATTERN, "");

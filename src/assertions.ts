@@ -147,7 +147,7 @@ type PredicatesToAssertions<T> = RemoveNevers<{
  *     https://www.npmjs.com/package/chai           × chai throws errors (not predicates)
  *     https://www.npmjs.com/package/typed-assert   × assertion functions (not predicates)
  */
-export function createAssertions<T>(obj: T): PredicatesToAssertions<T> {
+export function createAssertions<T extends object>(obj: T): PredicatesToAssertions<T> {
   const entries = Object.entries(obj).map(([label, assert]) => [
     label,
     typeof assert === "function"

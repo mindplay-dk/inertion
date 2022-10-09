@@ -32,7 +32,8 @@
     "test:ts-node": "ts-node test/test.ts",
     "cover": "nyc tsx test/test.ts",
     "report": "tsx test/report.ts",
-    "build": "parcel build"
+    "build": "tsc --noEmit && parcel build",
+    "prepack": "npm run build"
   },
   "files": [
     "dist"
@@ -51,7 +52,7 @@
     "pretty-format": "^29.1.2",
     "ts-node": "^10.9.1",
     "tsx": "^3.10.1",
-    "typescript": "^4.5.4",
+    "typescript": "~4.8",
     "validator": "^13.7.0"
   }
 }

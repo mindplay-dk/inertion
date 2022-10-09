@@ -2,6 +2,7 @@ import { Fact, Result } from "../src/api";
 import { UnknownError } from "../src/harness";
 import { FactoryMap } from "./container";
 import { plugins, format } from "pretty-format";
+import ansiSerializer from "jest-serializer-ansi-escapes";
 import { Change, diffLines, diffWordsWithSpace } from "diff";
 import colors from "./ansi-colors";
 import { isSameType } from "./is-same-type";
@@ -191,7 +192,7 @@ export const bootstrap: FactoryMap<Reporter> = {
   printReport,
   print: () => (line: string) => console.log(line),
   prefix: () => prefix,
-  format: () => (value: string) => format(value, { plugins: [formatString, ...Object.values(plugins)] }),
+  format: () => (value: string) => format(value, { plugins: [formatString, ...Object.values(plugins), ansiSerializer] }),
   formatError,
   formatDetails,
   formatDiagnostic,

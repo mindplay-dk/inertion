@@ -1,7 +1,7 @@
 import process from "process";
 import { Result } from "../src/api";
 import { assertions, createAssertions } from "../src/assertions";
-import { run, setup, UnknownError } from "../src/harness";
+import { getLocation, run, setup, UnknownError } from "../src/harness";
 import { printReport, isSuccess, statusOf } from "../src/reporting";
 import { failingTest, passingTest, createTestWithContext, testWithCustomAssertion, testWithUnexpectedError, testWithUnexpectedUnknownError } from "./cases";
 import { isSameType } from "../src/is-same-type";
@@ -75,12 +75,16 @@ test(`can run passing and failing tests`, async is => {
   is.equal(checkedResults, [expectedFromPassingTest, expectedFromFailingTest], "it produces the expected test results");
 
   is.equal(isSuccess(results), false, "isSuccess() returns false when any tests fail");
+
+  is.equal(statusOf(results), 1, "statusOf() returns 1 when any tests fail");
 });
 
 test(`can run passing test`, async is => {
   const results = await run(passingTest);
 
   is.equal(isSuccess(results), true, "isSuccess() returns true when all tests succeed");
+
+  is.equal(statusOf(results), 0, "statusOf() returns 0 when any tests fail");
 });
 
 test(`can create unique contexts`, async is => {
@@ -329,6 +333,32 @@ test(`can use a third-party validator library`, async is => {
   is.equal(a.isCreditCard("4929 7226 5379 7149").pass, false);
 
   is.equal((a as any).version, undefined, "non-function properties are omitted");
+});
+
+test(`can get call site location from Error instance`, async is => {
+  is.equal(
+    getLocation({ stack: "Error\n    at /home/user/file1.ts:123:45\n    at /home/user/file2.ts:123:45" } as unknown as Error),
+    "/home/user/file2.ts:123:45",
+    `can parse source-location with path in parens (e.g. tsx)`
+  );
+
+  is.equal(
+    getLocation({ stack: "Error\n    at null.<anonymous> (/home/user/file1.ts:123:45)\n    at null.<anonymous> (/home/user/file2.ts:123:45)" } as unknown as Error),
+    "/home/user/file2.ts:123:45",
+    `can parse source-location (e.g. node, ts-node, browsers)`
+  );
+
+  is.equal(
+    getLocation({ stack: "?????" } as unknown as Error),
+    "(unknown)",
+    `can handle malformed stack-trace`
+  );
+
+  is.equal(
+    getLocation({ stack: undefined } as unknown as Error),
+    "(unknown)",
+    `can handle mising stack-trace`
+  );
 });
 
 (async () => {

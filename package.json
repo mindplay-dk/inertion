@@ -27,7 +27,9 @@
   },
   "browserslist": "since 2020, Node 16",
   "scripts": {
-    "test": "tsx test/test.ts",
+    "test": "npm run test:tsx && npm run test:ts-node",
+    "test:tsx": "tsx test/test.ts",
+    "test:ts-node": "ts-node test/test.ts",
     "cover": "nyc tsx test/test.ts",
     "report": "tsx test/report.ts",
     "build": "parcel build"
@@ -46,6 +48,7 @@
     "nyc": "^15.1.0",
     "parcel": "^2.4.1",
     "pretty-format": "^27.5.1",
+    "ts-node": "^10.9.1",
     "tsx": "^3.10.1",
     "typescript": "^4.5.4",
     "validator": "^13.7.0"

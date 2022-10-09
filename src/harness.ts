@@ -88,8 +88,7 @@ export function getLocation(error: Error) {
   if (stack) {
     const line = stack
       .split("\n")
-      .filter(line => STACK_TRACE_PATTERN.test(line)) // remove preamble under Node
-      .at(1);
+      .filter(line => STACK_TRACE_PATTERN.test(line))[1]; // remove preamble under Node
 
     if (line) {
       const clean = line.replace(STACK_TRACE_PATTERN, "");

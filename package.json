@@ -27,11 +27,13 @@
   },
   "browserslist": "since 2020, Node 16",
   "scripts": {
-    "test": "npm run test:tsx && npm run test:ts-node",
+    "test": "npm run report:save && npm run test:tsx && npm run test:ts-node",
     "test:tsx": "tsx test/test.ts",
     "test:ts-node": "ts-node test/test.ts",
     "cover": "nyc tsx test/test.ts",
     "report": "tsx test/report.ts",
+    "report:snapshot": "tsx test/report.ts > test/report.expected.txt",
+    "report:save": "tsx test/report.ts > test/report.actual.txt",
     "build": "tsc --noEmit && parcel build",
     "prepack": "npm run build"
   },

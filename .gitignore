@@ -3,3 +3,4 @@
 node_modules/
 dist/
 /inertion-*.tgz
+test/report.actual.txt

@@ -1,6 +1,7 @@
 import { Check, Fact, Result } from "../src/api";
+import { createContainer } from "../src/container";
 import { UnknownError } from "../src/harness";
-import { printReport } from "../src/reporting";
+import { bootstrap, Reporter } from "../src/reporter";
 
 /**
  * How do you "test" what the output of a reporter looks like? 🤔
@@ -103,5 +104,10 @@ function createSampleResults(): Result[] {
 
   return results;
 }
+
+export const { printReport } = createContainer<Reporter>({
+  ...bootstrap,
+  formatError: ({ format }) => (error) => format(error) // omits stack traces from sample report, which would contain local file-system paths
+});
 
 printReport(createSampleResults());

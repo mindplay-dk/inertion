@@ -1,0 +1,120 @@
+FAILED: no actual or expected (0.123ms)
+
+  × [ok] no actual or expected
+  └ test.js:1:1
+
+FAILED: actual only (single-line) (0.123ms)
+
+  × [ok] actual only (single-line)
+  └ test.js:1:1
+
+  [41m[37m × [39m[49m ACTUAL: "actual only, single-line"
+
+FAILED: actual only (multi-line) (0.123ms)
+
+  × [ok] actual only (multi-line)
+  └ test.js:1:1
+
+  [41m[37m × [39m[49m ACTUAL:
+      "actual only\n"
+      + "multi-line"
+
+FAILED: actual and expected (single-line, same types) (0.123ms)
+
+  × [ok] actual and expected (single-line, same types)
+  └ test.js:1:1
+
+  ACTUAL:   "[41m[37mactual[39m[49m, single-line"
+  EXPECTED: "[42m[37mexpected[39m[49m, single-line"
+
+FAILED: actual and expected (single-line, different types) (0.123ms)
+
+  × [ok] actual and expected (single-line, different types)
+  └ test.js:1:1
+
+  [41m[37m × [39m[49m ACTUAL:   "actual"
+  [42m[37m √ [39m[49m EXPECTED: 123
+
+FAILED: actual and expected (multi-line, same types) (0.123ms)
+
+  × [ok] actual and expected (multi-line, same types)
+  └ test.js:1:1
+
+      Object {
+        "same": true,
+  [41m[37m × [39m[49m   "value": "actual\n"
+  [42m[37m √ [39m[49m   "value": "expected\n"
+        + "multi-line",
+      }
+
+FAILED: actual and expected (multi-line, different types) (0.123ms)
+
+  × [ok] actual and expected (multi-line, different types)
+  └ test.js:1:1
+
+  [41m[37m × [39m[49m ACTUAL:   "actual"
+  [42m[37m √ [39m[49m EXPECTED: Foo { ... }
+
+FAILED: actual and expected (multi-line, additions) (0.123ms)
+
+  × [ok] actual and expected (multi-line, additions)
+  └ test.js:1:1
+
+      Array [
+        1,
+        2,
+  [42m[37m √ [39m[49m   3,
+      ]
+
+FAILED: actual and expected (multi-line, removals) (0.123ms)
+
+  × [ok] actual and expected (multi-line, removals)
+  └ test.js:1:1
+
+      Array [
+        1,
+        2,
+  [41m[37m × [39m[49m   3,
+      ]
+
+FAILED: no error (0.123ms)
+
+  × [ok] 
+  └ test.js:1:1
+
+FAILED: has error (0.123ms)
+  [Error: oh no]
+
+  × [ok] 
+  └ test.js:1:1
+
+FAILED: unknown error (0.123ms)
+  [Error: Unknown error type]
+
+  × [ok] 
+  └ test.js:1:1
+
+FAILED: no details (0.123ms)
+
+  × [ok] 
+  └ test.js:1:1
+
+FAILED: one single-line detail (0.123ms)
+
+  × [ok] details, single-line
+  └ test.js:1:1
+
+FAILED: multiple lines or details (0.123ms)
+
+  × [ok] 
+  └ test.js:1:1
+  DETAILS:
+  Array [
+    "details\n"
+    + "multi-line",
+    "more details",
+  ]
+
+√ PASSED: 0
+× FAILED: 15
+  TOTAL:  15

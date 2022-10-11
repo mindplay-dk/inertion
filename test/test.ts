@@ -1,4 +1,5 @@
 import process from "process";
+import fs from "fs";
 import { Result } from "../src/api";
 import { assertions, createAssertions } from "../src/assertions";
 import { getLocation, run, setup, UnknownError } from "../src/harness";
@@ -15,7 +16,7 @@ test(`can run passing and failing tests`, async is => {
     error: undefined,
     checks: [
       {
-        location: "/home/mindplay/workspace/funky-test/test/cases.ts:7:6",
+        location: `${__dirname}/cases.ts:7:6`,
         fact: {
           label: "equal",
           pass: true,
@@ -25,7 +26,7 @@ test(`can run passing and failing tests`, async is => {
         },
       },
       {
-        location: "/home/mindplay/workspace/funky-test/test/cases.ts:8:6",
+        location: `${__dirname}/cases.ts:8:6`,
         fact: {
           label: "ok",
           pass: true,
@@ -42,7 +43,7 @@ test(`can run passing and failing tests`, async is => {
     error: undefined,
     checks: [
       {
-        location: "/home/mindplay/workspace/funky-test/test/cases.ts:14:6",
+        location: `${__dirname}/cases.ts:14:6`,
         fact: {
           label: "ok",
           pass: true,
@@ -52,7 +53,7 @@ test(`can run passing and failing tests`, async is => {
         },
       },
       {
-        location: "/home/mindplay/workspace/funky-test/test/cases.ts:15:6",
+        location: `${__dirname}/cases.ts:15:6`,
         fact: {
           label: "ok",
           pass: false,
@@ -106,7 +107,7 @@ test(`can bootstrap test-methods from assertions`, async is => {
         description: 'custom assertion',
         checks: [
           {
-            location: '/home/mindplay/workspace/funky-test/test/cases.ts:35:6',
+            location: `${__dirname}/cases.ts:35:6`,
             fact: {
               label: 'even',
               pass: true,
@@ -115,7 +116,7 @@ test(`can bootstrap test-methods from assertions`, async is => {
             }
           },
           {
-            location: '/home/mindplay/workspace/funky-test/test/cases.ts:36:6',
+            location: `${__dirname}/cases.ts:36:6`,
             fact: {
               label: 'even',
               pass: false,
@@ -358,6 +359,13 @@ test(`can get call site location from Error instance`, async is => {
     getLocation({ stack: undefined } as unknown as Error),
     "(unknown)",
     `can handle mising stack-trace`
+  );
+});
+
+test(`reporter output matches current snapshot`, async is => {
+  is.equal(
+    fs.readFileSync(`${__dirname}/report.actual.txt`, { encoding: "utf8" }),
+    fs.readFileSync(`${__dirname}/report.expected.txt`, { encoding: "utf8" })
   );
 });
 

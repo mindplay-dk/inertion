@@ -1,6 +1,6 @@
 {
   "name": "inertion",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "repository": "github:mindplay-dk/inertion",
   "source": "src/index.ts",
   "main": "dist/index.js",

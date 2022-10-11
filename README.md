@@ -23,7 +23,7 @@ The package is fully self-contained (no dependencies) but internally bundles the
 popular packages, all of which have 30M+ downloads per week:
 
   * [`fast-deep-equal`](https://www.npmjs.com/package/fast-deep-equal) for equality assertions. (by default.)
-  * [`pretty-format`](https://www.npmjs.com/package/pretty-format) to render values in reports. ([all plugins](https://github.com/facebook/jest/tree/main/packages/pretty-format/src/plugins) enabled + some customizations.)
+  * [`pretty-format`](https://www.npmjs.com/package/pretty-format) to render values in reports. ([all plugins](https://github.com/facebook/jest/tree/main/packages/pretty-format/src/plugins) enabled + [ANSI serializer](jest-serializer-ansi-escapes) and some customizations.)
   * [`diff`](https://www.npmjs.com/package/diff) to highlight errors and required corrections in reports.
   * [`ansi-colors`](https://www.npmjs.com/package/ansi-colors) to color-code reports.
 

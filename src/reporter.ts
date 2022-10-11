@@ -33,6 +33,8 @@ export function isFailed(result: Result): boolean {
  */
 export type Verbosity = 0 | 1 | 2;
 
+// TODO add `Verbosity` option to `printReport`
+
 export interface Reporter {
   printReport(results: Result[]): void;
   print(line: string): void;
@@ -171,7 +173,11 @@ const printReport = ({ print, format, prefix, formatDiagnostic }: Pick<Reporter,
   print(`  TOTAL:  ${passed + failed}`);
 };
 
-// yuck, but: https://github.com/facebook/jest/issues/12609
+/**
+ * Multi-line string formatting for `pretty-format`, which isn't pretty.
+ * 
+ * @see https://github.com/facebook/jest/issues/12609
+ */
 const formatString = {
   test(value: unknown) {
     return typeof value === "string";

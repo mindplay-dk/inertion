@@ -55,10 +55,17 @@ const truncate = (text: string): string => {
     : lines[0].trim();
 }
 
-const formatError = ({ format }: Pick<Reporter, "format">) => (error: Error): string => {
-  return (error instanceof UnknownError
+export const formatError = ({ format }: Pick<Reporter, "format">) => (error: Error): string => {
+  const title = error instanceof UnknownError
     ? `Unknown error:\n` + format(error.value)
-    : "") + error.stack;
+    : error.toString();
+
+  const stack = (error.stack || "")
+    .split("\n")
+    .filter(line => ! /node\:internal/.test(line)) // remove noisy lines referencing Node JS internals
+    .join("\n");
+
+  return `${title}\n${stack}`;
 }
 
 const formatDetails = ({ format }: Pick<Reporter, "format">) => (details: unknown[]): string => {

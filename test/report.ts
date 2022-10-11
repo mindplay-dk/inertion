@@ -2,6 +2,7 @@ import { Check, Fact, Result } from "../src/api";
 import { createContainer } from "../src/container";
 import { UnknownError } from "../src/harness";
 import { bootstrap, Reporter } from "../src/reporter";
+import { formatError } from "../src/reporter";
 
 /**
  * How do you "test" what the output of a reporter looks like? 🤔
@@ -105,9 +106,23 @@ function createSampleResults(): Result[] {
   return results;
 }
 
+function escapeRegExp(str: string) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+}
+
 export const { printReport } = createContainer<Reporter>({
   ...bootstrap,
-  formatError: ({ format }) => (error) => format(error) // omits stack traces from sample report, which would contain local file-system paths
+  formatError: ({ format }) => {
+    // remove absolute paths from sample report:
+
+    const $formatError = formatError({ format });
+    
+    const dir = process.cwd();
+
+    const DIR_PATTERN = new RegExp(escapeRegExp(dir), "g");
+
+    return (error) => $formatError(error).replace(DIR_PATTERN, `/path/to`);
+  }
 });
 
 printReport(createSampleResults());

@@ -118,7 +118,7 @@ const formatDiagnostic = ({ format }: Pick<Reporter, "format">) => (fact: Fact):
   );
 }
 
-const printReport = ({ print, format, prefix, formatDiagnostic }: Pick<Reporter, "print"| "format" | "prefix" | "formatDiagnostic">) => (results: Result[]): void => {
+const printReport = ({ print, format, prefix, formatError, formatDiagnostic }: Pick<Reporter, "print"| "format" | "prefix" | "formatError" | "formatDiagnostic">) => (results: Result[]): void => {
   for (const result of results) {
     const { description, time } = result;
 
@@ -127,7 +127,7 @@ const printReport = ({ print, format, prefix, formatDiagnostic }: Pick<Reporter,
     print(`${pass ? "PASSED" : "FAILED"}: ${description} (${time}ms)`);
 
     const error = result.error
-      ? (result.error instanceof UnknownError ? `Unknown error:\n` + format(result.error.value) : "") + "\n" + result.error.stack
+      ? formatError(result.error)
       : undefined;
 
     if (error) {

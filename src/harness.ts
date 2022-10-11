@@ -80,7 +80,7 @@ export async function runTest<T extends MethodMap, C>({ methods, createContext, 
 
 const STACK_TRACE_PATTERN = /^\s+at /; // matches the start of stack-trace lines
 
-const PATH_PATTERN = /\(([^)]+)\)/g; // matches path in e.g.: `null.<anonymous> (/home/mindplay/workspace/funky-test/test/cases.ts:35:6)`
+const PATH_PATTERN = /\(([^)]+)\)/g; // matches path in e.g.: `null.<anonymous> (/home/user/path/to/test/cases.ts:35:6)`
 
 export function getLocation(error: Error) {
   const stack = error.stack;

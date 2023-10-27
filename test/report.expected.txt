@@ -84,16 +84,10 @@ FAILED: no error (0.123ms)
 
 FAILED: has error (0.123ms)
   Error: oh no
-  /path/to/test/report.ts:77
-      "has error": { error: new Error(`oh no`), checks: basicChecks },
-                            ^
-  
-  Error: oh no
-      at null.createSampleResults (/path/to/test/report.ts:77:27)
-      at null.<anonymous> (/path/to/test/report.ts:128:13)
+      at createSampleResults (/path/to/test/report.ts:77:27)
+      at <anonymous> (/path/to/test/report.ts:128:13)
       at Object.<anonymous> (/path/to/test/report.ts:128:34)
       at Object.v (/path/to/node_modules/@esbuild-kit/cjs-loader/dist/index.js:1:901)
-      at async Promise.all (index 0)
 
   × [ok] 
   └ test.js:1:1
@@ -103,16 +97,11 @@ FAILED: unknown error (0.123ms)
   Object {
     "oops": "oh no",
   }
-  /path/to/test/report.ts:78
-      "unknown error": { error: new UnknownError({ oops: "oh no" }), checks: basicChecks },
-                                ^
-  
   Error: Unknown error type
-      at null.createSampleResults (/path/to/test/report.ts:78:31)
-      at null.<anonymous> (/path/to/test/report.ts:128:13)
+      at createSampleResults (/path/to/test/report.ts:78:31)
+      at <anonymous> (/path/to/test/report.ts:128:13)
       at Object.<anonymous> (/path/to/test/report.ts:128:34)
       at Object.v (/path/to/node_modules/@esbuild-kit/cjs-loader/dist/index.js:1:901)
-      at async Promise.all (index 0)
 
   × [ok] 
   └ test.js:1:1

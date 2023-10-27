@@ -23,9 +23,9 @@
     }
   },
   "engines": {
-    "node": ">= 16"
+    "node": ">= 18"
   },
-  "browserslist": "since 2020, Node 16",
+  "browserslist": "since 2020, Node 18",
   "scripts": {
     "test": "npm run report:save && npm run test:tsx && npm run test:ts-node",
     "test:tsx": "tsx test/test.ts",

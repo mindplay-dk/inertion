@@ -85,9 +85,9 @@ FAILED: no error (0.123ms)
 FAILED: has error (0.123ms)
   Error: oh no
       at createSampleResults (/path/to/test/report.ts:77:27)
-      at <anonymous> (/path/to/test/report.ts:128:13)
+      at import_reporter (/path/to/test/report.ts:128:13)
       at Object.<anonymous> (/path/to/test/report.ts:128:34)
-      at Object.v (/path/to/node_modules/@esbuild-kit/cjs-loader/dist/index.js:1:901)
+      at Object.j (/path/to/node_modules/tsx/dist/cjs/index.cjs:1:1197)
 
   × [ok] 
   └ test.js:1:1
@@ -99,9 +99,9 @@ FAILED: unknown error (0.123ms)
   }
   Error: Unknown error type
       at createSampleResults (/path/to/test/report.ts:78:31)
-      at <anonymous> (/path/to/test/report.ts:128:13)
+      at import_reporter (/path/to/test/report.ts:128:13)
       at Object.<anonymous> (/path/to/test/report.ts:128:34)
-      at Object.v (/path/to/node_modules/@esbuild-kit/cjs-loader/dist/index.js:1:901)
+      at Object.j (/path/to/node_modules/tsx/dist/cjs/index.cjs:1:1197)
 
   × [ok] 
   └ test.js:1:1
